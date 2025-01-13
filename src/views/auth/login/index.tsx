@@ -1,7 +1,9 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import Link from "next/link";
 import { useState } from "react";
+import Image from "next/image";
 
 const AuthForm: React.FC = () => {
   const [isRightPanelActive, setIsRightPanelActive] = useState(true);
@@ -15,30 +17,30 @@ const AuthForm: React.FC = () => {
       <div className="lg:flex justify-center p-10 max-md:p-4 items-center min-h-screen bg-gray-100 relative">
         {/* Mobile Tab for Switching */}
         <div className="top-4 left-4 right-4 md:hidden mb-5 flex justify-center gap-4 z-10">
-          <button
+          <Button
             onClick={() => setIsRightPanelActive(true)}
             className={`flex-1 px-4 py-2 rounded-full text-sm font-semibold shadow-lg transition-transform transform ${
               isRightPanelActive
-                ? "bg-gradient-to-r from-purple-500 to-indigo-500 text-white scale-100"
+                ? "bg-gradient-to-r from-blue-600 to-blue-800 text-white scale-100"
                 : "bg-gray-300 text-gray-700 scale-95"
             }`}
           >
             Sign In
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={() => setIsRightPanelActive(false)}
             className={`flex-1 px-4 py-2 rounded-full text-sm font-semibold shadow-lg transition-transform transform ${
               isRightPanelActive
                 ? "bg-gray-300 text-gray-700 scale-95"
-                : "bg-gradient-to-r from-purple-500 to-indigo-500 text-white scale-100"
+                : "bg-gradient-to-r from-blue-600 to-blue-800 text-white scale-100"
             }`}
           >
             Sign Up
-          </button>
+          </Button>
         </div>
 
         <div
-          className={`relative max-md:flex-col w-full max-w-5xl h-[600px] bg-white shadow-lg rounded-3xl overflow-hidden flex transform transition-transform duration-500 ease-in-out ${
+          className={`relative max-md:flex-col w-full max-w-5xl h-[600px] bg-white shadow-xl rounded-3xl overflow-hidden flex transform transition-transform duration-500 ease-in-out ${
             isRightPanelActive ? "flex-row-reverse" : ""
           } md:w-full`}
         >
@@ -50,45 +52,41 @@ const AuthForm: React.FC = () => {
                 : "opacity-100 translate-x-0 visible"
             } max-md:h-full`}
           >
+            <Image
+              src="/images/light-icon.svg"
+              alt="My Icon"
+              width={150}
+              height={150}
+              className="md:h-[160px] md:w-[160px] md:max-h-max"
+            />
             <form className="flex flex-col items-center h-full justify-center">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
                 Create Account
               </h1>
-              <div className="flex gap-4 mb-6">
-                {["facebook-f", "google-plus-g", "linkedin-in"].map((icon) => (
-                  <a
-                    key={icon}
-                    href="#"
-                    className="flex items-center justify-center w-10 h-10 border rounded-full border-gray-300 text-gray-600 hover:text-blue-600 transition"
-                  >
-                    <i className={`fab fa-${icon}`}></i>
-                  </a>
-                ))}
-              </div>
-              <span className="text-sm text-gray-500 mb-4">
-                or use your email for registration
+              <span className="text-sm text-center text-gray-500 mb-4">
+                Fill up the information to create a new account and explore.
               </span>
-              <input
+              <Input
                 type="text"
                 placeholder="Name"
                 className="w-full px-4 py-2 mb-3 border rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <input
+              <Input
                 type="email"
                 placeholder="Email"
                 className="w-full px-4 py-2 mb-3 border rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <input
+              <Input
                 type="password"
                 placeholder="Password"
                 className="w-full px-4 py-2 mb-6 border rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <button
+              <Button
                 type="submit"
                 className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-full hover:opacity-90 transition"
               >
                 Sign Up
-              </button>
+              </Button>
             </form>
           </div>
 
@@ -100,23 +98,19 @@ const AuthForm: React.FC = () => {
                 : "opacity-0 translate-x-[100%] invisible"
             } max-md:h-full`}
           >
+            <Image
+              src="/images/light-icon.svg"
+              alt="My Icon"
+              width={150}
+              height={150}
+              className="md:h-[160px] md:w-[160px] md:max-h-max"
+            />
             <form className="flex flex-col items-center h-full justify-center">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
                 Sign In
               </h1>
-              <div className="flex gap-4 mb-6">
-                {["facebook-f", "google-plus-g", "linkedin-in"].map((icon) => (
-                  <a
-                    key={icon}
-                    href="#"
-                    className="flex items-center justify-center w-10 h-10 border rounded-full border-gray-300 text-gray-600 hover:text-blue-600 transition"
-                  >
-                    <i className={`fab fa-${icon}`}></i>
-                  </a>
-                ))}
-              </div>
-              <span className="text-sm text-gray-500 mb-4">
-                or use your account
+              <span className="text-sm text-center text-gray-500 mb-4">
+                Fill up the information in order to login and explore.
               </span>
               <Input
                 type="email"
@@ -128,12 +122,12 @@ const AuthForm: React.FC = () => {
                 placeholder="Password"
                 className="w-full px-4 py-2 mb-6 border rounded bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <a
+              <Link
                 href="#"
                 className="text-sm text-blue-600 mb-4 underline hover:text-blue-800"
               >
                 Forgot your password?
-              </a>
+              </Link>
               <Button
                 type="submit"
                 className="px-6 py-2 bg-gradient-to-r from-blue-600 to-blue-800 text-white rounded-full hover:opacity-90 transition"
@@ -160,12 +154,12 @@ const AuthForm: React.FC = () => {
                   ? "To keep connected with us, please log in with your personal info."
                   : "Enter your personal information and start journey with us."}
               </p>
-              <button
+              <Button
                 onClick={togglePanel}
-                className="px-6 py-2 border border-white rounded-full hover:bg-white hover:text-blue-800 transition"
+                className="px-6 py-2 border bg-blue-700 border-white rounded-full hover:bg-white hover:text-blue-800 transition"
               >
                 {isRightPanelActive ? "Sign Up" : "Sign In"}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
