@@ -3,15 +3,15 @@
 import * as React from "react";
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   Command,
-  Frame,
-  Map,
-  PieChart,
   Settings2,
-  SquareTerminal,
 } from "lucide-react";
+import { BsTrash } from "react-icons/bs";
+import { IoMdHeartEmpty } from "react-icons/io";
+import { HiOutlineSquares2X2 } from "react-icons/hi2";
+import { IoLogoJavascript } from "react-icons/io5";
+import { SiCplusplus } from "react-icons/si";
+import { AiOutlinePython } from "react-icons/ai";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 import { NavMain } from "@/components/sidebar/nav-main";
 import { NavProjects } from "@/components/sidebar/nav-projects";
@@ -24,6 +24,8 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { APP_LINKS } from "@/constants/app-links";
+
 
 // This is sample data.
 const data = {
@@ -59,14 +61,14 @@ const data = {
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
+      title: "All Snippets",
+      url: `${APP_LINKS.DASHBOARD_OVERVIEW}`,
+      icon: HiOutlineSquares2X2,
+      isActive: false,
       items: [
         {
           title: "History",
-          url: "#",
+          url: `${APP_LINKS.DASHBOARD_OVERVIEW}`,
         },
         {
           title: "Starred",
@@ -79,9 +81,9 @@ const data = {
       ],
     },
     {
-      title: "Models",
+      title: "Favorites",
       url: "#",
-      icon: Bot,
+      icon: IoMdHeartEmpty,
       items: [
         {
           title: "Genesis",
@@ -98,9 +100,9 @@ const data = {
       ],
     },
     {
-      title: "Documentation",
+      title: "Trash",
       url: "#",
-      icon: BookOpen,
+      icon: BsTrash,
       items: [
         {
           title: "Introduction",
@@ -144,21 +146,21 @@ const data = {
       ],
     },
   ],
-  projects: [
+  languages: [
     {
-      name: "Design Engineering",
+      name: "Javascript",
       url: "#",
-      icon: Frame,
+      icon: IoLogoJavascript,
     },
     {
-      name: "Sales & Marketing",
+      name: "Python",
       url: "#",
-      icon: PieChart,
+      icon: AiOutlinePython,
     },
     {
-      name: "Travel",
+      name: "C++",
       url: "#",
-      icon: Map,
+      icon: SiCplusplus,
     },
   ],
 };
@@ -171,7 +173,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProjects languages={data.languages} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight } from "lucide-react"
 
 import {
   Collapsible,
@@ -17,6 +17,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import { IconType } from "react-icons/lib"
 
 export function NavMain({
   items,
@@ -24,7 +25,7 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon?: LucideIcon
+    icon?: IconType
     isActive?: boolean
     items?: {
       title: string

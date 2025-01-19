@@ -5,7 +5,6 @@ import {
   Forward,
   MoreHorizontal,
   Trash2,
-  type LucideIcon,
 } from "lucide-react"
 
 import {
@@ -24,25 +23,26 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { IconType } from "react-icons/lib"
 
 export function NavProjects({
-  projects,
+  languages,
 }: {
-  projects: {
+  languages: {
     name: string
     url: string
-    icon: LucideIcon
+    icon: IconType
   }[]
 }) {
   const { isMobile } = useSidebar()
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Projects</SidebarGroupLabel>
+      <SidebarGroupLabel>Languages</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
+        {languages.map((item) => (
           <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
+            <SidebarMenuButton asChild className="hover:bg-gradient-to-r from-blue-600 to-blue-800 hover:text-white transition-all duration-150">
               <a href={item.url}>
                 <item.icon />
                 <span>{item.name}</span>
