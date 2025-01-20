@@ -1,11 +1,11 @@
 "use client"
 
-import { ChevronRight } from "lucide-react"
+// import { ChevronRight } from "lucide-react"
 
 import {
   Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
+  // CollapsibleContent,
+  // CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import {
   SidebarGroup,
@@ -13,9 +13,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
+  // SidebarMenuSub,
+  // SidebarMenuSubButton,
+  // SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 import { IconType } from "react-icons/lib"
 
@@ -45,14 +45,14 @@ export function NavMain({
             className="group/collapsible"
           >
             <SidebarMenuItem>
-              <CollapsibleTrigger asChild>
-                <SidebarMenuButton tooltip={item.title} className="hover:bg-gradient-to-r from-blue-600 to-blue-800 hover:text-white transition-all duration-150">
+              {/* <CollapsibleTrigger asChild> */}
+                <SidebarMenuButton key={item.title} className="hover:bg-gradient-to-r from-blue-600 to-blue-800 hover:text-white transition-all duration-150">
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
-                  <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  {/* <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" /> */}
                 </SidebarMenuButton>
-              </CollapsibleTrigger>
-              <CollapsibleContent>
+              {/* </CollapsibleTrigger> */}
+              {/* <CollapsibleContent>
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
@@ -64,7 +64,7 @@ export function NavMain({
                     </SidebarMenuSubItem>
                   ))}
                 </SidebarMenuSub>
-              </CollapsibleContent>
+              </CollapsibleContent> */}
             </SidebarMenuItem>
           </Collapsible>
         ))}
