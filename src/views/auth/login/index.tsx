@@ -12,6 +12,8 @@ const AuthForm: React.FC = () => {
     setIsRightPanelActive(!isRightPanelActive);
   };
 
+  // const [name, setName ] = 'use'
+
   return (
     <>
       <div className="lg:flex justify-center p-10 max-md:p-4 items-center min-h-screen bg-gray-100 relative">
@@ -52,13 +54,12 @@ const AuthForm: React.FC = () => {
                 : "opacity-100 translate-x-0 visible"
             } max-md:h-full`}
           >
-            <Image
-              src="/images/light-icon.svg"
-              alt="My Icon"
-              width={150}
-              height={150}
-              className="md:h-[160px] md:w-[160px] md:max-h-max"
-            />
+            <div className="relative">
+              <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                Snippet
+              </span>
+              <span className="text-black"> Hub</span>
+            </div>
             <form className="flex flex-col items-center h-full justify-center">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
                 Create Account

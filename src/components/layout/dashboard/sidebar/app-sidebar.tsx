@@ -1,11 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  AudioWaveform,
-  Command,
-  Settings2,
-} from "lucide-react";
+import { AudioWaveform, Command, Settings2 } from "lucide-react";
 import { BsTrash } from "react-icons/bs";
 import { IoMdHeartEmpty } from "react-icons/io";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
@@ -13,10 +9,10 @@ import { IoLogoJavascript } from "react-icons/io5";
 import { SiCplusplus } from "react-icons/si";
 import { AiOutlinePython } from "react-icons/ai";
 import DataObjectIcon from "@mui/icons-material/DataObject";
-import { NavMain } from "@/components/sidebar/nav-main";
-import { NavProjects } from "@/components/sidebar/nav-projects";
-import { NavUser } from "@/components/sidebar/nav-user";
-import { TeamSwitcher } from "@/components/sidebar/team-switcher";
+import { NavMain } from "@/components/layout/dashboard/sidebar/nav-main";
+import { NavProjects } from "@/components/layout/dashboard/sidebar/nav-projects";
+import { NavUser } from "@/components/layout/dashboard/sidebar/nav-user";
+import { TeamSwitcher } from "@/components/layout/dashboard/sidebar/team-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -25,7 +21,6 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { APP_LINKS } from "@/constants/app-links";
-
 
 // This is sample data.
 const data = {
@@ -38,12 +33,11 @@ const data = {
     {
       name: (
         <div className="relative">
-        <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-          Snippet
-        </span>
-        <span className="text-black"> Hub</span>
-      </div>
-      
+          <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            Snippet
+          </span>
+          <span className="text-black"> Hub</span>
+        </div>
       ),
       logo: DataObjectIcon,
       plan: "Enterprise",
