@@ -10,7 +10,7 @@ import {
 import { ModeToggle } from "@/components/ui/mode-toogle";
 import { Separator } from "@/components/ui/separator";
 import {
-  SidebarInset,
+  // SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";

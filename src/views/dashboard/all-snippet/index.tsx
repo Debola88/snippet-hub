@@ -1,17 +1,17 @@
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import React from "react";
 import SnippetSearchBar from "./_components/searchbar";
 import Tags from "./_components/tags";
 
 const DashboardAllSnippetsView = () => {
-  const buttonLabels = [
-    "All",
-    "Filter function Exercises",
-    "API Methods",
-    "JavaScript Functions",
-    "React Functions",
-    "Reduce Function",
-  ];
+  // const buttonLabels = [
+  //   "All",
+  //   "Filter function Exercises",
+  //   "API Methods",
+  //   "JavaScript Functions",
+  //   "React Functions",
+  //   "Reduce Function",
+  // ];
 
   return (
     <div>
@@ -22,9 +22,9 @@ const DashboardAllSnippetsView = () => {
       {/* <div className="relative w-[100%]">
 
       </div> */}
-      {/* <section className="bg-muted/50 rounded-xl p-5 flex gap-2"> */}
+      <section className="bg-muted/50 rounded-xl p-5 flex gap-2">
         <Tags />
-      {/* </section> */}
+      </section>
     </div>
   );
 };
