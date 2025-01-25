@@ -14,18 +14,18 @@ const DashboardAllSnippetsView = () => {
   ];
 
   return (
-    <>
+    <div>
       {/* Search Bar */}
       <SnippetSearchBar />
 
       {/* Tags and Buttons Section */}
-      <div className="relative w-[100%]">
+      {/* <div className="relative w-[100%]">
 
-      </div>
-      <section className="bg-muted/50 rounded-xl p-5 flex w-full gap-2 absolute">
+      </div> */}
+      {/* <section className="bg-muted/50 rounded-xl p-5 flex gap-2"> */}
         <Tags />
-      </section>
-    </>
+      {/* </section> */}
+    </div>
   );
 };
 

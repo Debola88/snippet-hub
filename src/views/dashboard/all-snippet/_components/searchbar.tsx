@@ -5,14 +5,13 @@ import { Button } from "@/components/ui/button";
 
 const SnippetSearchBar = () => {
   return (
-    <div>
-      <div className="rounded-xl py-5 flex w-full max-w-full items-center gap-2 ">
-        <div className="relative w-full">
-          <IoSearchOutline className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-800" />
+      <div className="rounded-xl py-5 flex w-full max-w-full items-center gap-2">
+        <div className="flex-1 flex items-center gap-2 rounded-full focus:ring-blue-600 bg-muted/50 dark:text-white focus-visible:ring-blue-600 px-4">
+          <IoSearchOutline className="text-blue-800" />
           <Input
             type="text"
             placeholder="Search a snippet..."
-            className="block w-full focus-visible:ring-blue-600  pl-12 pr-4 text-gray-700 bg-muted/50 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-blue-600  rounded-full"
+            className="block text-gray-700 placeholder-gray-400 bg-transparent focus-visible:outline-none focus-visible:ring-none focus-visible:ring-transparent ring-none border-none focus-visible:ring-offset-0"
           />
         </div>
         <Button
@@ -31,7 +30,6 @@ const SnippetSearchBar = () => {
           <FaPlus />
         </Button>
       </div>
-    </div>
   );
 };
 
