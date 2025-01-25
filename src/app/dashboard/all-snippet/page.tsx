@@ -1,9 +1,8 @@
-import React from 'react'
+import DashboardAllSnippetsView from "@/views/dashboard/all-snippet";
+import React from "react";
 
 const DashboardAllSnippetPage = () => {
-  return (
-    <div>page</div>
-  )
-}
+  return <DashboardAllSnippetsView />;
+};
 
-export default DashboardAllSnippetPage
+export default DashboardAllSnippetPage;
