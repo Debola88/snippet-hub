@@ -19,20 +19,11 @@ const DashboardAllSnippetsView = () => {
       <SnippetSearchBar />
 
       {/* Tags and Buttons Section */}
-      <section className="bg-muted/50 rounded-xl p-5 flex flex-wrap w-full gap-2">
-        {/* Tags */}
-        <Tags />
+      <div className="relative w-[100%]">
 
-        {/* Buttons */}
-        {buttonLabels.map((label, index) => (
-          <Button
-            key={index}
-            variant="ghost"
-            className="max-w-max flex-1 text-gray-700 hover:text-white hover:bg-gradient-to-r from-blue-600 to-blue-800 dark:text-white"
-          >
-            {label}
-          </Button>
-        ))}
+      </div>
+      <section className="bg-muted/50 rounded-xl p-5 flex w-full gap-2 absolute">
+        <Tags />
       </section>
     </>
   );
