@@ -11,7 +11,7 @@ const SnippetSearchBar = () => {
           <Input
             type="text"
             placeholder="Search a snippet..."
-            className="block text-gray-700 placeholder-gray-400 bg-transparent focus-visible:outline-none focus-visible:ring-none focus-visible:ring-transparent ring-none border-none focus-visible:ring-offset-0"
+            className="block text-gray-700 dark:text-white placeholder-gray-400 bg-transparent focus-visible:outline-none focus-visible:ring-none focus-visible:ring-transparent ring-none border-none focus-visible:ring-offset-0"
           />
         </div>
         <Button

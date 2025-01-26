@@ -2,29 +2,18 @@
 import React from "react";
 import SnippetSearchBar from "./_components/searchbar";
 import Tags from "./_components/tags";
+import CodeSnippetsGrid from "./_components/codesnippet";
 
 const DashboardAllSnippetsView = () => {
-  // const buttonLabels = [
-  //   "All",
-  //   "Filter function Exercises",
-  //   "API Methods",
-  //   "JavaScript Functions",
-  //   "React Functions",
-  //   "Reduce Function",
-  // ];
-
   return (
     <div>
-      {/* Search Bar */}
       <SnippetSearchBar />
-
-      {/* Tags and Buttons Section */}
-      {/* <div className="relative w-[100%]">
-
-      </div> */}
-      <section className="bg-muted/50 rounded-xl p-5 flex gap-2">
+      <div className="bg-muted/50 rounded-xl p-5 flex gap-2">
         <Tags />
-      </section>
+      </div>
+      <div>
+        <CodeSnippetsGrid />
+      </div>
     </div>
   );
 };
