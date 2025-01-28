@@ -2,7 +2,7 @@
 import { MongoClient } from "mongodb";
 
 const client = new MongoClient(process.env.MONGO_URI!); // Make sure to use your MongoDB URI
-const databaseName = "auth-app"; // You can change this to your preferred database name
+const databaseName = "snippet_hub"; // You can change this to your preferred database name
 
 let clientPromise: Promise<MongoClient>;
 

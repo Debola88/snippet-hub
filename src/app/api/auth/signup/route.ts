@@ -33,7 +33,7 @@ export const POST = async (req: Request) => {
 
     return NextResponse.json({ message: "User created successfully." });
   } catch (error) {
-    console.error("Error in sign-up:", error);
+    console.error("Error in sign-up:", error.errorResponse);
     return NextResponse.json({ message: "An error occurred." }, { status: 500 });
   }
 };
