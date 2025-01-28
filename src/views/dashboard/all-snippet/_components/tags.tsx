@@ -17,6 +17,9 @@ const Tags = () => {
     "JavaScript Functions",
   ];
 
+  interface SnippetSearchBarProps {
+    onSearch: (query: string) => void; // Define the onSearch prop
+  }
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
