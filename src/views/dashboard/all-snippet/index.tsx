@@ -1,14 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from "react";
 import SnippetSearchBar from "./_components/searchbar";
 import Tags from "./_components/tags";
-import CodeSnippetsGrid from "./_components/codesnippet";
 import ContentNote from "./_components/contentnote";
+import CodeSnippetsGrid from "./_components/codesnippetgrid";
+import { SiJavascript, SiPython, SiTypescript } from "react-icons/si";
+import { IconType } from "react-icons/lib";
 
 interface Snippet {
   language: string;
-  icon: string;
+  icon: IconType;
   functionName: string;
   description: string;
   code: string;
@@ -19,12 +22,10 @@ const DashboardAllSnippetsView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("All");
   const [selectedSnippet, setSelectedSnippet] = useState<Snippet | null>(null);
-
-  // Example snippets data
   const snippets: Snippet[] = [
     {
-      language: "JavaScript",
-      icon: "SiJavascript",
+      language: "Javascript",
+      icon: SiJavascript,
       functionName: "filterArray",
       description: "Filters an array based on a callback function.",
       code: `const filterArray = (arr, fn) => arr.filter(fn);`,
@@ -32,7 +33,7 @@ const DashboardAllSnippetsView = () => {
     },
     {
       language: "Python",
-      icon: "SiPython",
+      icon: SiPython,
       functionName: "sum_list",
       description: "Calculates the sum of all elements in a list.",
       code: `def sum_list(lst):\n    return sum(lst)`,
@@ -40,7 +41,7 @@ const DashboardAllSnippetsView = () => {
     },
     {
       language: "TypeScript",
-      icon: "SiTypescript",
+      icon: SiTypescript,
       functionName: "sortArray",
       description: "Sorts an array of numbers in ascending order.",
       code: `const sortArray = (arr: number[]): number[] => \n  arr.sort((a, b) => a - b);`,
@@ -48,7 +49,6 @@ const DashboardAllSnippetsView = () => {
     },
   ];
 
-  // Filter snippets based on search query and selected tag
   const filteredSnippets = snippets.filter((snippet) => {
     const matchesSearch = snippet.functionName
       .toLowerCase()
@@ -66,7 +66,11 @@ const DashboardAllSnippetsView = () => {
           <Tags onSelectTag={setSelectedTag} />
         </div>
         {/* Split-screen layout */}
-        <div className={`grid ${selectedSnippet ? "grid-cols-2" : "grid-cols-1"} gap-6 mt-6`}>
+        <div
+          className={`grid ${
+            selectedSnippet ? "grid-cols-2" : "grid-cols-1"
+          } gap-6 mt-6`}
+        >
           {/* Left side: Tags and Snippets Grid */}
           <div>
             <CodeSnippetsGrid
@@ -77,7 +81,10 @@ const DashboardAllSnippetsView = () => {
           {/* Right side: Content Note (conditionally rendered) */}
           {selectedSnippet && (
             <div className="bg-muted/50 rounded-xl p-5">
-              <ContentNote snippet={selectedSnippet} />
+              <ContentNote
+                snippet={selectedSnippet}
+                onClose={() => setSelectedSnippet(null)}
+              />
             </div>
           )}
         </div>

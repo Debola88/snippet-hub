@@ -9,7 +9,7 @@ import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 
 interface CodeSnippetCardProps {
   language: string;
-  icon: string;
+  icon: React.ElementType; // React component for the icon
   code: string;
   functionName: string;
   description: string;
@@ -19,7 +19,7 @@ interface CodeSnippetCardProps {
 
 const CodeSnippetCard = ({
   language,
-  icon,
+  icon: Icon,
   code,
   functionName,
   description,
@@ -29,7 +29,7 @@ const CodeSnippetCard = ({
   const [isFavorite, setIsFavorite] = useState(false);
 
   return (
-    <Card className="rounded-2xl flex flex-col justify-between shadow-xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 max-w-lg">
+    <Card className="rounded-2xl flex flex-col justify-between shadow-xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 w-full">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle
@@ -58,7 +58,7 @@ const CodeSnippetCard = ({
       </CardHeader>
       <CardContent className="mt-4">
         <div className="mb-2 flex items-center justify-between bg-gray-200 dark:bg-gray-700 p-2 rounded-t-lg text-xs text-gray-700 dark:text-gray-300">
-          <span>index.{language.toLowerCase()}</span>
+          <span>index.{language}</span>
           <span>readonly</span>
         </div>
         <pre className="p-4 bg-gray-100 dark:bg-gray-800 rounded-b-lg text-sm overflow-x-auto font-mono text-gray-800 dark:text-gray-200 h-auto">
@@ -68,7 +68,7 @@ const CodeSnippetCard = ({
       {/* Card Footer */}
       <div className="mt-auto px-6 pb-4 flex justify-between items-center text-sm">
         <div className="flex items-center gap-1 relative">
-          <span className="text-xl text-blue-600">{icon}</span>
+          <Icon className="text-xl text-blue-600"/>
           <span className="font-medium bg-gradient-to-r from-blue-600 to-blue-900 bg-clip-text text-transparent">
             {language}
           </span>

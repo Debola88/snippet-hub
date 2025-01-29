@@ -1,23 +1,64 @@
 "use client";
 
 import React from "react";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism"; // Choose a theme
 
 interface ContentNoteProps {
   snippet: {
     functionName: string;
     description: string;
     code: string;
+    language?: string; // Optional: Add language for syntax highlighting
   };
+  onClose: () => void;
 }
 
-const ContentNote = ({ snippet }: ContentNoteProps) => {
+const ContentNote = ({ snippet, onClose }: ContentNoteProps) => {
   return (
-    <div>
+    <div className="relative">
+      {/* Close button */}
+      <button
+        onClick={onClose}
+        className="absolute top-0 right-0 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+        aria-label="Close"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+
+      {/* Content */}
       <h2 className="text-xl font-bold mb-4">{snippet.functionName}</h2>
-      <p className="text-gray-600 dark:text-gray-400">{snippet.description}</p>
-      <pre className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-sm overflow-x-auto font-mono text-gray-800 dark:text-gray-200">
+      <p className="text-gray-600 dark:text-gray-400 mb-6">
+        {snippet.description}
+      </p>
+
+      {/* Syntax Highlighter */}
+      <SyntaxHighlighter
+        language={snippet.language || "javascript"} // Default to JavaScript
+        style={oneDark} // Use a dark theme
+        customStyle={{
+          borderRadius: "0.5rem",
+          padding: "1.5rem",
+          fontSize: "0.875rem",
+          lineHeight: "1.5",
+        }}
+        wrapLongLines
+      >
         {snippet.code}
-      </pre>
+      </SyntaxHighlighter>
     </div>
   );
 };

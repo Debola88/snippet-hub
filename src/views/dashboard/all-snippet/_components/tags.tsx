@@ -3,7 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { useRef } from "react";
 
-const Tags = () => {
+interface TagsProps {
+  onSelectTag: (tag: string) => void;
+}
+
+const Tags: React.FC<TagsProps> = ({ onSelectTag }) => {
   const navItems = [
     "All",
     "Filter function Exercises",
@@ -11,15 +15,8 @@ const Tags = () => {
     "JavaScript Functions",
     "React Functions",
     "Reduce Function",
-    "Reduce Function",
-    "Reduce Function",
-    "Reduce Function",
-    "JavaScript Functions",
   ];
 
-  interface SnippetSearchBarProps {
-    onSearch: (query: string) => void; // Define the onSearch prop
-  }
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -38,8 +35,10 @@ const Tags = () => {
     };
 
     const handleMouseUp = () => {
-      container.style.cursor = "grab";
-      container.style.userSelect = "auto";
+      if (container) {
+        container.style.cursor = "grab";
+        container.style.userSelect = "auto";
+      }
 
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
@@ -61,6 +60,8 @@ const Tags = () => {
             key={index}
             variant="ghost"
             className="px-4 py-2 min-w-fit text-gray-700 hover:text-white hover:bg-gradient-to-r from-blue-600 to-blue-800 dark:text-white"
+            onClick={() => onSelectTag(item)} // Call onSelectTag when a tag is clicked
+            aria-label={`Select tag: ${item}`} // Improve accessibility
           >
             {item}
           </Button>
