@@ -9,7 +9,7 @@ interface ContentNoteProps {
     functionName: string;
     description: string;
     code: string;
-    language?: string; // Optional: Add language for syntax highlighting
+    language?: string;
   };
   onClose: () => void;
 }
@@ -17,7 +17,6 @@ interface ContentNoteProps {
 const ContentNote = ({ snippet, onClose }: ContentNoteProps) => {
   return (
     <div className="relative">
-      {/* Close button */}
       <button
         onClick={onClose}
         className="absolute top-0 right-0 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
@@ -39,16 +38,14 @@ const ContentNote = ({ snippet, onClose }: ContentNoteProps) => {
         </svg>
       </button>
 
-      {/* Content */}
       <h2 className="text-xl font-bold mb-4">{snippet.functionName}</h2>
       <p className="text-gray-600 dark:text-gray-400 mb-6">
         {snippet.description}
       </p>
 
-      {/* Syntax Highlighter */}
       <SyntaxHighlighter
         language={snippet.language || "javascript"} // Default to JavaScript
-        style={oneDark} // Use a dark theme
+        style={oneDark}
         customStyle={{
           borderRadius: "0.5rem",
           padding: "1.5rem",

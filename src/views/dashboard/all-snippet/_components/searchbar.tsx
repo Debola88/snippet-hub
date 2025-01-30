@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 import React from "react";
 
 interface SnippetSearchBarProps {
-  onSearch: (query: string) => void; // Define the onSearch prop
+  onSearch: (query: string) => void;
 }
 
 const SnippetSearchBar: React.FC<SnippetSearchBarProps> = ({ onSearch }) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onSearch(event.target.value); // Call onSearch with the input value
+    onSearch(event.target.value);
   };
 
   return (

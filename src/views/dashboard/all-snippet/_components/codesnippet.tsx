@@ -9,7 +9,7 @@ import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 
 interface CodeSnippetCardProps {
   language: string;
-  icon: React.ElementType; // React component for the icon
+  icon: React.ElementType;
   code: string;
   functionName: string;
   description: string;
