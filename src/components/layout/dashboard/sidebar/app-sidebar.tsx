@@ -22,7 +22,6 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LINKS } from "@/constants/app-links";
 
-// This is sample data.
 const data = {
   user: {
     name: "shadcn",
