@@ -26,7 +26,7 @@ export function TeamSwitcher({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     name: any
     logo: React.ElementType
-    // plan: string
+    plan: string
   }[]
 }) {
   const { isMobile } = useSidebar()
