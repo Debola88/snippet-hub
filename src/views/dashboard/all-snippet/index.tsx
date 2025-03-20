@@ -1,6 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
+"use client"
 import React, { useState } from "react";
 import SnippetSearchBar from "./_components/searchbar";
 import Tags from "./_components/tags";
@@ -22,6 +20,7 @@ const DashboardAllSnippetsView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("All");
   const [selectedSnippet, setSelectedSnippet] = useState<Snippet | null>(null);
+
   const snippets: Snippet[] = [
     {
       language: "Javascript",
@@ -65,14 +64,14 @@ const DashboardAllSnippetsView = () => {
         <div className="bg-muted/50 rounded-xl p-5 flex gap-2">
           <Tags onSelectTag={setSelectedTag} />
         </div>
-        {/* Split-screen layout */}
-        <div
-          className={`grid ${
-            selectedSnippet ? "grid-cols-2" : "grid-cols-1"
-          } gap-6 mt-6`}
-        >
-          {/* Left side: Tags and Snippets Grid */}
-          <div>
+        {/* Flex layout for responsiveness */}
+        <div className={`${selectedSnippet ? "gap-6" : ""} mt-6`}>
+          {/* Left side: Snippets Grid */}
+          <div
+            className={`transition-all duration-500 ${
+              selectedSnippet ? "hidden" : "w-full"
+            }`}
+          >
             <CodeSnippetsGrid
               snippets={filteredSnippets}
               onSnippetSelect={setSelectedSnippet}
@@ -80,7 +79,11 @@ const DashboardAllSnippetsView = () => {
           </div>
           {/* Right side: Content Note (conditionally rendered) */}
           {selectedSnippet && (
-            <div className="bg-muted/50 rounded-xl p-5">
+            <div
+              className={`transition-all duration-500 ${
+                selectedSnippet ? "flex-1" : "w-0"
+              } bg-muted/50 rounded-xl p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900`}
+            >
               <ContentNote
                 snippet={selectedSnippet}
                 onClose={() => setSelectedSnippet(null)}

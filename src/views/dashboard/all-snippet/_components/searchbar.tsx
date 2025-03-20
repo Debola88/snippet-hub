@@ -21,7 +21,7 @@ const SnippetSearchBar: React.FC<SnippetSearchBarProps> = ({ onSearch }) => {
           type="text"
           placeholder="Search a snippet..."
           className="block text-gray-700 dark:text-white placeholder-gray-400 bg-transparent focus-visible:outline-none focus-visible:ring-none focus-visible:ring-transparent ring-none border-none focus-visible:ring-offset-0"
-          onChange={handleInputChange} // Add onChange handler
+          onChange={handleInputChange}
         />
       </div>
       <Button
