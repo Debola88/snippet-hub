@@ -1,8 +1,6 @@
-"use client";
-
 import React from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism"; // Choose a theme
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 interface ContentNoteProps {
   snippet: {
@@ -16,7 +14,7 @@ interface ContentNoteProps {
 
 const ContentNote = ({ snippet, onClose }: ContentNoteProps) => {
   return (
-    <div className="relative">
+    <div className="relative h-full ">
       <button
         onClick={onClose}
         className="absolute top-0 right-0 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
@@ -43,19 +41,21 @@ const ContentNote = ({ snippet, onClose }: ContentNoteProps) => {
         {snippet.description}
       </p>
 
-      <SyntaxHighlighter
-        language={snippet.language || "javascript"} // Default to JavaScript
-        style={oneDark}
-        customStyle={{
-          borderRadius: "0.5rem",
-          padding: "1.5rem",
-          fontSize: "0.875rem",
-          lineHeight: "1.5",
-        }}
-        wrapLongLines
-      >
-        {snippet.code}
-      </SyntaxHighlighter>
+      <div className="overflow-x-auto">
+        <SyntaxHighlighter
+          language={snippet.language || "javascript"}
+          style={oneDark}
+          customStyle={{
+            borderRadius: "0.5rem",
+            padding: "1.5rem",
+            fontSize: "0.875rem",
+            lineHeight: "1.5",
+          }}
+          wrapLongLines
+        >
+          {snippet.code}
+        </SyntaxHighlighter>
+      </div>
     </div>
   );
 };
