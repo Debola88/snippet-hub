@@ -1,11 +1,48 @@
-"use client"
-import React, { useState } from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 import SnippetSearchBar from "./_components/searchbar";
 import Tags from "./_components/tags";
 import ContentNote from "./_components/contentnote";
 import CodeSnippetsGrid from "./_components/codesnippetgrid";
-import { SiJavascript, SiPython, SiTypescript } from "react-icons/si";
+import SnippetForm from "./_components/snippetform";
 import { IconType } from "react-icons/lib";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  SiJavascript,
+  SiTypescript,
+  SiPython,
+  SiC,
+  SiCplusplus,
+  SiGo,
+  SiPhp,
+  SiRuby,
+  SiKotlin,
+  SiSwift,
+  SiRust,
+  SiJson,
+  SiHtml5,
+  SiCss3,
+  SiSass,
+  SiMysql,
+  SiMarkdown,
+  SiGnubash,
+  SiYaml,
+  SiDocker,
+  SiPerl,
+  SiLua,
+  SiR,
+  SiPostgresql,
+  SiMongodb,
+  SiVuedotjs,
+  SiReact,
+  SiSharp,
+} from "react-icons/si";
 
 interface Snippet {
   language: string;
@@ -16,37 +53,141 @@ interface Snippet {
   dateCreated: string;
 }
 
+const languageIconMap: Record<string, IconType> = {
+  JavaScript: SiJavascript,
+  TypeScript: SiTypescript,
+  Python: SiPython,
+  C: SiC,
+  "C++": SiCplusplus,
+  Cpp: SiCplusplus,
+  "C#": SiSharp,
+  Csharp: SiSharp,
+  Go: SiGo,
+  PHP: SiPhp,
+  Php: SiPhp,
+  Ruby: SiRuby,
+  Kotlin: SiKotlin,
+  Swift: SiSwift,
+  Rust: SiRust,
+  JSON: SiJson,
+  Json: SiJson,
+  HTML: SiHtml5,
+  Html: SiHtml5,
+  CSS: SiCss3,
+  Css: SiCss3,
+  SCSS: SiSass,
+  Scss: SiSass,
+  SQL: SiMysql,
+  Sql: SiMysql,
+  PostgreSQL: SiPostgresql,
+  Postgresql: SiPostgresql,
+  MongoDB: SiMongodb,
+  Mongodb: SiMongodb,
+  Markdown: SiMarkdown,
+  Bash: SiGnubash,
+  Shell: SiGnubash,
+  YAML: SiYaml,
+  Yaml: SiYaml,
+  Dockerfile: SiDocker,
+  Docker: SiDocker,
+  Perl: SiPerl,
+  Lua: SiLua,
+  R: SiR,
+  Vue: SiVuedotjs,
+  React: SiReact,
+};
+
+const normalizeLang = (lang: string) => {
+  switch (lang.toLowerCase()) {
+    case "python":
+      return "Python";
+    case "c":
+      return "C";
+    case "typescript":
+      return "TypeScript";
+    case "javascript":
+      return "JavaScript";
+    case "c++":
+    case "cpp":
+      return "C++";
+    case "c#":
+    case "csharp":
+      return "C#";
+    case "go":
+      return "Go";
+    case "php":
+      return "PHP";
+    case "ruby":
+      return "Ruby";
+    case "kotlin":
+      return "Kotlin";
+    case "swift":
+      return "Swift";
+    case "rust":
+      return "Rust";
+    case "json":
+      return "JSON";
+    case "html":
+      return "HTML";
+    case "css":
+      return "CSS";
+    case "scss":
+      return "SCSS";
+    case "sql":
+      return "SQL";
+    case "postgresql":
+      return "PostgreSQL";
+    case "mongodb":
+      return "MongoDB";
+    case "markdown":
+      return "Markdown";
+    case "bash":
+    case "shell":
+      return "Bash";
+    case "yaml":
+      return "YAML";
+    case "ini":
+      return "INI";
+    case "dockerfile":
+    case "docker":
+      return "Dockerfile";
+    case "perl":
+      return "Perl";
+    case "lua":
+      return "Lua";
+    case "r":
+      return "R";
+    case "vue":
+      return "Vue";
+    case "react":
+      return "React";
+    default:
+      return lang.charAt(0).toUpperCase() + lang.slice(1);
+  }
+};
+
+
 const DashboardAllSnippetsView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("All");
   const [selectedSnippet, setSelectedSnippet] = useState<Snippet | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [editSnippetIndex, setEditSnippetIndex] = useState<number | null>(null);
+  const [snippets, setSnippets] = useState<Snippet[]>([]);
 
-  const snippets: Snippet[] = [
-    {
-      language: "Javascript",
-      icon: SiJavascript,
-      functionName: "filterArray",
-      description: "Filters an array based on a callback function.",
-      code: `const filterArray = (arr, fn) => arr.filter(fn);`,
-      dateCreated: "Jan 24, 2025",
-    },
-    {
-      language: "Python",
-      icon: SiPython,
-      functionName: "sum_list",
-      description: "Calculates the sum of all elements in a list.",
-      code: `def sum_list(lst):\n    return sum(lst)`,
-      dateCreated: "Jan 10, 2025",
-    },
-    {
-      language: "TypeScript",
-      icon: SiTypescript,
-      functionName: "sortArray",
-      description: "Sorts an array of numbers in ascending order.",
-      code: `const sortArray = (arr: number[]): number[] => \n  arr.sort((a, b) => a - b);`,
-      dateCreated: "Jan 20, 2025",
-    },
-  ];
+  // Load from localStorage on mount
+  useEffect(() => {
+    const storedSnippets = localStorage.getItem("my-snippets");
+    if (storedSnippets) {
+      setSnippets(JSON.parse(storedSnippets));
+    }
+  }, []);
+
+  // Sync to localStorage when snippets change
+  useEffect(() => {
+    localStorage.setItem("my-snippets", JSON.stringify(snippets));
+  }, [snippets]);
 
   const filteredSnippets = snippets.filter((snippet) => {
     const matchesSearch = snippet.functionName
@@ -57,16 +198,55 @@ const DashboardAllSnippetsView = () => {
     return matchesSearch && matchesTag;
   });
 
+  const handleCreateClick = () => {
+    setEditMode(false);
+    setEditSnippetIndex(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (snippet: Snippet) => {
+    const index = snippets.findIndex(
+      (s) => s.functionName === snippet.functionName
+    );
+    setEditMode(true);
+    setEditSnippetIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveSnippet = (data: Omit<Snippet, "icon" | "dateCreated">) => {
+    const icon = languageIconMap[normalizeLang(data.language)] || SiJavascript;
+    if (editMode && editSnippetIndex !== null) {
+      const updatedSnippets = [...snippets];
+      updatedSnippets[editSnippetIndex] = {
+        ...updatedSnippets[editSnippetIndex],
+        ...data,
+        icon,
+      };
+      setSnippets(updatedSnippets);
+      setSelectedSnippet(updatedSnippets[editSnippetIndex]);
+    } else {
+      const newSnippet: Snippet = {
+        ...data,
+        icon,
+        dateCreated: new Date().toLocaleDateString(),
+      };
+      setSnippets([newSnippet, ...snippets]);
+    }
+    setIsModalOpen(false);
+  };
+
   return (
-    <div className="p-6">
-      <SnippetSearchBar onSearch={setSearchQuery} />
+    <div className="">
+      <SnippetSearchBar
+        onSearch={setSearchQuery}
+        onCreateClick={handleCreateClick}
+      />
       <div className="mt-6">
         <div className="bg-muted/50 rounded-xl p-5 flex gap-2">
           <Tags onSelectTag={setSelectedTag} />
         </div>
-        {/* Flex layout for responsiveness */}
+
         <div className={`${selectedSnippet ? "gap-6" : ""} mt-6`}>
-          {/* Left side: Snippets Grid */}
           <div
             className={`transition-all duration-500 ${
               selectedSnippet ? "hidden" : "w-full"
@@ -77,7 +257,6 @@ const DashboardAllSnippetsView = () => {
               onSnippetSelect={setSelectedSnippet}
             />
           </div>
-          {/* Right side: Content Note (conditionally rendered) */}
           {selectedSnippet && (
             <div
               className={`transition-all duration-500 ${
@@ -87,11 +266,30 @@ const DashboardAllSnippetsView = () => {
               <ContentNote
                 snippet={selectedSnippet}
                 onClose={() => setSelectedSnippet(null)}
+                onEdit={handleEditClick}
               />
             </div>
           )}
         </div>
       </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {editMode ? "Edit Snippet" : "Create Snippet"}
+            </DialogTitle>
+          </DialogHeader>
+          <SnippetForm
+            initialData={
+              editMode && editSnippetIndex !== null
+                ? snippets[editSnippetIndex]
+                : undefined
+            }
+            onSave={handleSaveSnippet}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

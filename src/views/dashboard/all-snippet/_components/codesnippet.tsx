@@ -1,6 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client";
-
 import React, { useState } from "react";
 import { Trash } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +13,7 @@ interface CodeSnippetCardProps {
   description: string;
   dateCreated: string;
   onSnippetSelect: (snippet: any) => void;
+  onDelete: () => void;
 }
 
 const CodeSnippetCard = ({
@@ -25,6 +24,7 @@ const CodeSnippetCard = ({
   description,
   dateCreated,
   onSnippetSelect,
+  onDelete,
 }: CodeSnippetCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
@@ -68,13 +68,18 @@ const CodeSnippetCard = ({
       {/* Card Footer */}
       <div className="mt-auto px-6 pb-4 flex justify-between items-center text-sm">
         <div className="flex items-center gap-1 relative">
-          <Icon className="text-xl text-blue-600"/>
+          <Icon className="text-xl text-blue-600" />
           <span className="font-medium bg-gradient-to-r from-blue-600 to-blue-900 bg-clip-text text-transparent">
             {language}
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="text-gray-500">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-gray-500 hover:text-red-600"
+            onClick={onDelete}
+          >
             <Trash />
           </Button>
         </div>

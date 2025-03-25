@@ -6,9 +6,10 @@ import React from "react";
 
 interface SnippetSearchBarProps {
   onSearch: (query: string) => void;
+  onCreateClick: () => void;
 }
 
-const SnippetSearchBar: React.FC<SnippetSearchBarProps> = ({ onSearch }) => {
+const SnippetSearchBar: React.FC<SnippetSearchBarProps> = ({ onSearch, onCreateClick }) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onSearch(event.target.value);
   };
@@ -26,6 +27,7 @@ const SnippetSearchBar: React.FC<SnippetSearchBarProps> = ({ onSearch }) => {
       </div>
       <Button
         type="button"
+        onClick={onCreateClick}
         className="ml-2 max-md:hidden transition-all duration-150 rounded-full text-sm bg-gradient-to-r from-blue-600 to-blue-800 hover:bg-gradient-to-r hover:from-blue-600/90 hover:to-blue-800/90 dark:text-white"
         size="lg"
       >
@@ -34,6 +36,7 @@ const SnippetSearchBar: React.FC<SnippetSearchBarProps> = ({ onSearch }) => {
       </Button>
       <Button
         type="button"
+        onClick={onCreateClick}
         className="ml-2 md:hidden p-[14px] rounded-full transition-all duration-150 text-sm bg-gradient-to-r from-blue-600 to-blue-800 dark:text-white hover:bg-gradient-to-r hover:from-blue-600/90 hover:to-blue-800/90"
         size="lg"
       >
