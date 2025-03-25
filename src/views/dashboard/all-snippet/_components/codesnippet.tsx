@@ -13,7 +13,7 @@ interface CodeSnippetCardProps {
   description: string;
   dateCreated: string;
   onSnippetSelect: (snippet: any) => void;
-  onDelete: () => void; // <-- ADD this prop for deleting
+  onDelete: () => void;
 }
 
 const CodeSnippetCard = ({
@@ -78,7 +78,7 @@ const CodeSnippetCard = ({
             variant="ghost"
             size="icon"
             className="text-gray-500 hover:text-red-600"
-            onClick={onDelete} // <-- Call the delete function here
+            onClick={onDelete}
           >
             <Trash />
           </Button>
