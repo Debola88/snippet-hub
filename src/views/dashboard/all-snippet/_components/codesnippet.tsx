@@ -27,6 +27,7 @@ const CodeSnippetCard = ({
   onDelete,
 }: CodeSnippetCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
+  const shortCode = code.split("\n").slice(0, 3).join("\n");
 
   return (
     <Card className="rounded-2xl flex flex-col justify-between shadow-xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 w-full">
@@ -34,7 +35,7 @@ const CodeSnippetCard = ({
         <div className="flex items-center justify-between">
           <CardTitle
             className="text-lg font-bold text-gray-900 dark:text-white cursor-pointer"
-            onClick={() => onSnippetSelect({ functionName, description, code })}
+            onClick={() => onSnippetSelect({ functionName, description, code, language })}
           >
             {functionName}
           </CardTitle>
@@ -47,23 +48,29 @@ const CodeSnippetCard = ({
             {isFavorite ? <MdFavorite /> : <MdFavoriteBorder />}
           </Button>
         </div>
-        <div className="flex flex-col gap-1">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {description}
-          </p>
-        </div>
-        <span className="text-xs text-gray-500 dark:text-gray-400">
-          {dateCreated}
-        </span>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+        <span className="text-xs text-gray-500 dark:text-gray-400">{dateCreated}</span>
       </CardHeader>
       <CardContent className="mt-4">
         <div className="mb-2 flex items-center justify-between bg-gray-200 dark:bg-gray-700 p-2 rounded-t-lg text-xs text-gray-700 dark:text-gray-300">
           <span>index.{language}</span>
           <span>readonly</span>
         </div>
-        <pre className="p-4 bg-gray-100 dark:bg-gray-800 rounded-b-lg text-sm overflow-x-auto font-mono text-gray-800 dark:text-gray-200 h-auto">
-          {code}
+        {/* Display first 3 lines */}
+        <pre className="p-4 bg-gray-100 dark:bg-gray-800 rounded-b-lg text-sm overflow-x-auto font-mono text-gray-800 dark:text-gray-200">
+          {shortCode}
+          {code.split("\n").length > 3 && "...\n"}
         </pre>
+        {/* Show More Button */}
+        {code.split("\n").length > 3 && (
+          <Button
+            variant="ghost"
+            className="text-blue-600 dark:text-blue-400 text-sm mt-2"
+            onClick={() => onSnippetSelect({ functionName, description, code, language })}
+          >
+            Show More
+          </Button>
+        )}
       </CardContent>
       {/* Card Footer */}
       <div className="mt-auto px-6 pb-4 flex justify-between items-center text-sm">
