@@ -1,23 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MongoClient } from "mongodb";
+/* eslint-disable prefer-const */
+import mongoose from "mongoose";
 
-const client = new MongoClient(process.env.MONGO_URI!); 
-const databaseName = "snippet_hub"; 
+const MONGODB_URI = process.env.MONGODB_URI;
+if (!MONGODB_URI) throw new Error("MONGODB_URI is not defined");
 
-let clientPromise: Promise<MongoClient>;
+let cached = (global as any).mongoose || { conn: null, promise: null };
 
-if (process.env.NODE_ENV === "development") {
-  let globalClient: MongoClient | undefined = (global as any).mongoClient;
-  if (!globalClient) {
-    globalClient = client;
-    (global as any).mongoClient = globalClient;
+export async function dbConnect() {
+  if (cached.conn) return cached.conn;
+
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(MONGODB_URI!, {
+      dbName: "snippet-hub",
+    });
   }
-  clientPromise = Promise.resolve(globalClient);
-} else {
-  clientPromise = client.connect();
-}
 
-export const getDb = async () => {
-  const clientInstance = await clientPromise;
-  return clientInstance.db(databaseName);
-};
+  cached.conn = await cached.promise;
+  return cached.conn;
+}

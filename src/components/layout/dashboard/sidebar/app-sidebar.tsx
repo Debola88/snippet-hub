@@ -35,7 +35,7 @@ const data = {
           <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
             Snippet
           </span>
-          <span className="text-black"> Hub</span>
+          <span className="text-black dark:text-white"> Hub</span>
         </div>
       ),
       logo: DataObjectIcon,
