@@ -274,7 +274,7 @@ const DashboardAllSnippetsView = () => {
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent>
+        <DialogContent className="max-md:max-w-[370px]">
           <DialogHeader>
             <DialogTitle>
               {editMode ? "Edit Snippet" : "Create Snippet"}

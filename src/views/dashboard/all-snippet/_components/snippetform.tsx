@@ -2,7 +2,6 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import React, { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
 import {
   Select,
   SelectTrigger,
@@ -11,21 +10,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
-  ssr: false,
-});
-
-interface SnippetFormProps {
-  initialData?: {
-    functionName: string;
-    description: string;
-    code: string;
-    language: string;
-  };
-  onSave: (snippet: any) => void;
+interface SnippetFormData {
+  functionName: string;
+  description: string;
+  code: string;
+  language: string;
 }
 
-const SUPPORTED_LANGUAGES = [
+interface SnippetFormProps {
+  initialData?: SnippetFormData;
+  onSave: (snippet: SnippetFormData) => void;
+}
+
+const SUPPORTED_LANGUAGES: string[] = [
   "javascript",
   "typescript",
   "python",
@@ -56,7 +53,7 @@ const SUPPORTED_LANGUAGES = [
 ];
 
 const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<SnippetFormData>({
     functionName: "",
     description: "",
     code: "",
@@ -74,13 +71,9 @@ const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCodeChange = (value: string | undefined) => {
-    setForm((prev) => ({ ...prev, code: value || "" }));
-  };
-
-  const getMonacoLanguage = (lang: string) => {
-    const safeLang = lang.trim().toLowerCase();
-    return SUPPORTED_LANGUAGES.includes(safeLang) ? safeLang : "plaintext";
+  const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    setForm((prev) => ({ ...prev, code: value }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -99,7 +92,9 @@ const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
       />
       <Select
         value={form.language}
-        onValueChange={(val) => setForm((prev) => ({ ...prev, language: val }))}
+        onValueChange={(val: string) =>
+          setForm((prev) => ({ ...prev, language: val }))
+        }
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select language" />
@@ -112,13 +107,6 @@ const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
           ))}
         </SelectContent>
       </Select>
-      {/* <Input
-        name="language"
-        placeholder="Language (e.g., javascript, python, rust)"
-        value={form.language}
-        onChange={handleChange}
-        required
-      /> */}
       <Input
         name="description"
         placeholder="Description"
@@ -126,25 +114,15 @@ const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
         onChange={handleChange}
         required
       />
-
+      {/* Code Editor Replacement using a styled textarea */}
       <div className="h-72 border border-gray-700 rounded-lg overflow-hidden">
-        <MonacoEditor
-          height="100%"
-          language={getMonacoLanguage(form.language)}
-          theme="vs-dark"
+        <textarea
+          className="w-full h-full p-4 bg-gray-900 text-green-300 font-mono text-sm resize-none outline-none"
+          placeholder="Enter your code here..."
           value={form.code}
           onChange={handleCodeChange}
-          options={{
-            fontSize: 14,
-            minimap: { enabled: false },
-            scrollBeyondLastLine: false,
-            automaticLayout: true,
-            wordWrap: "on",
-            tabSize: 2,
-          }}
         />
       </div>
-
       <Button type="submit" className="w-full">
         Save
       </Button>
