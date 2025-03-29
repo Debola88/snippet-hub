@@ -4,6 +4,9 @@ import { Trash } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
+import CodeMirror from "@uiw/react-codemirror";
+import { oneDark } from "@codemirror/theme-one-dark";
+import { javascript } from "@codemirror/lang-javascript";
 
 interface CodeSnippetCardProps {
   language: string;
@@ -29,13 +32,19 @@ const CodeSnippetCard = ({
   const [isFavorite, setIsFavorite] = useState(false);
   const shortCode = code.split("\n").slice(0, 3).join("\n");
 
+  const getLanguageExtension = () => {
+    return javascript();
+  };
+
   return (
     <Card className="rounded-2xl flex flex-col justify-between shadow-xl bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 w-full">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle
             className="text-lg font-bold text-gray-900 dark:text-white cursor-pointer"
-            onClick={() => onSnippetSelect({ functionName, description, code, language })}
+            onClick={() =>
+              onSnippetSelect({ functionName, description, code, language })
+            }
           >
             {functionName}
           </CardTitle>
@@ -56,23 +65,32 @@ const CodeSnippetCard = ({
           <span>index.{language}</span>
           <span>readonly</span>
         </div>
-        {/* Display first 3 lines */}
-        <pre className="p-4 bg-gray-100 dark:bg-gray-800 rounded-b-lg text-sm overflow-x-auto font-mono text-gray-800 dark:text-gray-200">
-          {shortCode}
-          {code.split("\n").length > 3 && "...\n"}
-        </pre>
-        {/* Show More Button */}
+        <div className="overflow-x-auto">
+          <CodeMirror
+            value={shortCode}
+            height="150px"
+            theme={oneDark}
+            extensions={[getLanguageExtension()]}
+            readOnly={true}
+            className="rounded-md"
+            style={{
+              backgroundColor: "#1a1a1a",
+              borderRadius: "5px",
+            }}
+          />
+        </div>
         {code.split("\n").length > 3 && (
           <Button
             variant="ghost"
             className="text-blue-600 dark:text-blue-400 text-sm mt-2"
-            onClick={() => onSnippetSelect({ functionName, description, code, language })}
+            onClick={() =>
+              onSnippetSelect({ functionName, description, code, language })
+            }
           >
             Show More
           </Button>
         )}
       </CardContent>
-      {/* Card Footer */}
       <div className="mt-auto px-6 pb-4 flex justify-between items-center text-sm">
         <div className="flex items-center gap-1 relative">
           <Icon className="text-xl text-blue-600" />

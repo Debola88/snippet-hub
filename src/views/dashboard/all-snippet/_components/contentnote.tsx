@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { oneDark } from "@codemirror/theme-one-dark";
 
 interface ContentNoteProps {
   snippet: {
@@ -15,7 +16,20 @@ interface ContentNoteProps {
   onEdit: (snippet: any) => void;
 }
 
-const ContentNote = ({ snippet, onClose, onEdit }: ContentNoteProps) => {
+const ContentNote: React.FC<ContentNoteProps> = ({ snippet, onClose, onEdit }) => {
+  const [code, setCode] = useState(snippet.code);
+
+
+  const getLanguageExtension = () => {
+    switch ((snippet.language || "javascript").toLowerCase()) {
+      case "javascript":
+      case "js":
+        return javascript();
+      default:
+        return javascript();
+    }
+  };
+
   return (
     <div className="relative h-full">
       <button
@@ -32,24 +46,24 @@ const ContentNote = ({ snippet, onClose, onEdit }: ContentNoteProps) => {
       <p className="text-gray-600 dark:text-gray-400 mb-6">{snippet.description}</p>
 
       <div className="overflow-x-auto">
-        <SyntaxHighlighter
-          language={snippet.language || "javascript"}
-          style={oneDark}
-          customStyle={{
-            borderRadius: "0.5rem",
-            padding: "1.5rem",
-            fontSize: "0.875rem",
-            lineHeight: "1.5",
-          }}
-          wrapLongLines
-        >
-          {snippet.code}
-        </SyntaxHighlighter>
+        <CodeMirror
+          value={code}
+          height="full"
+          theme={oneDark}
+          extensions={[getLanguageExtension()]}
+          onChange={(value) => setCode(value)}
+          className="rounded-md"
+        />
       </div>
 
-      <Button variant="outline" className="mt-4" onClick={() => onEdit(snippet)}>
-        Edit Snippet
-      </Button>
+      <div className="mt-4 flex gap-2">
+        <Button variant="outline" onClick={onClose}>
+          Close
+        </Button>
+        <Button onClick={() => onEdit({ ...snippet, code })}>
+          Save Changes
+        </Button>
+      </div>
     </div>
   );
 };

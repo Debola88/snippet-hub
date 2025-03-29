@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState, useEffect } from "react";
 import SnippetSearchBar from "./_components/searchbar";
@@ -13,6 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
 import {
   SiJavascript,
   SiTypescript,
@@ -45,13 +47,21 @@ import {
 } from "react-icons/si";
 
 interface Snippet {
+  _id: string;
   language: string;
   icon: IconType;
   functionName: string;
   description: string;
   code: string;
-  dateCreated: string;
+  createdAt: string;
 }
+
+export type SnippetFormData = {
+  functionName: string;
+  description: string;
+  code: string;
+  language: string;
+};
 
 const languageIconMap: Record<string, IconType> = {
   JavaScript: SiJavascript,
@@ -166,7 +176,6 @@ const normalizeLang = (lang: string) => {
   }
 };
 
-
 const DashboardAllSnippetsView = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("All");
@@ -175,117 +184,151 @@ const DashboardAllSnippetsView = () => {
   const [editMode, setEditMode] = useState(false);
   const [editSnippetIndex, setEditSnippetIndex] = useState<number | null>(null);
   const [snippets, setSnippets] = useState<Snippet[]>([]);
+  // const router = useRouter();
 
-  // Load from localStorage on mount
+  // Fetch snippets from API on mount
   useEffect(() => {
-    const storedSnippets = localStorage.getItem("my-snippets");
-    if (storedSnippets) {
-      setSnippets(JSON.parse(storedSnippets));
-    }
+    const fetchSnippets = async () => {
+      try {
+        const res = await fetch("/api/snippet");
+        const data = await res.json();
+        if (res.ok) {
+          const mapped = data.map((snippet: Snippet) => ({
+            ...snippet,
+            icon: languageIconMap[normalizeLang(snippet.language)] || SiJavascript,
+          }));
+          setSnippets(mapped);
+        }
+      } catch (error) {
+        console.error("Failed to fetch snippets:", error);
+      }
+    };
+
+    fetchSnippets();
   }, []);
-
-  // Sync to localStorage when snippets change
-  useEffect(() => {
-    localStorage.setItem("my-snippets", JSON.stringify(snippets));
-  }, [snippets]);
 
   const filteredSnippets = snippets.filter((snippet) => {
     const matchesSearch = snippet.functionName
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesTag =
-      selectedTag === "All" || snippet.language === selectedTag;
+      selectedTag === "All" ||
+      snippet.language.toLowerCase() === selectedTag.toLowerCase();
     return matchesSearch && matchesTag;
   });
 
   const handleCreateClick = () => {
     setEditMode(false);
     setEditSnippetIndex(null);
+    setSelectedSnippet(null);
     setIsModalOpen(true);
   };
 
   const handleEditClick = (snippet: Snippet) => {
-    const index = snippets.findIndex(
-      (s) => s.functionName === snippet.functionName
-    );
-    setEditMode(true);
-    setEditSnippetIndex(index);
-    setIsModalOpen(true);
+    const index = snippets.findIndex((s) => s._id === snippet._id);
+    if (index !== -1) {
+      setEditMode(true);
+      setEditSnippetIndex(index);
+      setSelectedSnippet(snippet);
+      setIsModalOpen(true);
+    }
   };
 
-  const handleSaveSnippet = (data: Omit<Snippet, "icon" | "dateCreated">) => {
-    const icon = languageIconMap[normalizeLang(data.language)] || SiJavascript;
-    if (editMode && editSnippetIndex !== null) {
-      const updatedSnippets = [...snippets];
-      updatedSnippets[editSnippetIndex] = {
-        ...updatedSnippets[editSnippetIndex],
-        ...data,
-        icon,
+  const handleSaveSnippet = async (data: SnippetFormData) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You must be logged in to add or edit a snippet.");
+        return;
+      }
+
+      let res;
+      if (editMode && selectedSnippet) {
+        res = await fetch(`/api/snippet/${selectedSnippet._id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        });
+      } else {
+        res = await fetch("/api/snippet", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        });
+      }
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Failed to save snippet.");
+
+      const snippetWithIcon: Snippet = {
+        ...result,
+        icon: languageIconMap[normalizeLang(result.language)] || SiJavascript,
       };
-      setSnippets(updatedSnippets);
-      setSelectedSnippet(updatedSnippets[editSnippetIndex]);
-    } else {
-      const newSnippet: Snippet = {
-        ...data,
-        icon,
-        dateCreated: new Date().toLocaleDateString(),
-      };
-      setSnippets([newSnippet, ...snippets]);
+
+      if (editMode && selectedSnippet) {
+        setSnippets((prev) =>
+          prev.map((s) => (s._id === selectedSnippet._id ? snippetWithIcon : s))
+        );
+        setSelectedSnippet(snippetWithIcon);
+      } else {
+        setSnippets([snippetWithIcon, ...snippets]);
+      }
+      setIsModalOpen(false);
+    } catch (error: any) {
+      console.error("Error saving snippet:", error);
+      alert("Error: " + error.message);
     }
-    setIsModalOpen(false);
   };
+
+  // const handleDeleteSnippet = async (snippetId: string) => {
+  //   try {
+  //     const token = localStorage.getItem("token");
+  //     if (!token) {
+  //       alert("You must be logged in to delete a snippet.");
+  //       return;
+  //     }
+  //     const res = await fetch(`/api/snippet/${snippetId}`, {
+  //       method: "DELETE",
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     if (!res.ok) throw new Error("Failed to delete snippet.");
+  //     setSnippets((prev) => prev.filter((s) => s._id !== snippetId));
+  //     setSelectedSnippet(null);
+  //   } catch (error) {
+  //     console.error("Error deleting snippet:", error);
+  //   }
+  // };
 
   return (
     <div className="">
-      <SnippetSearchBar
-        onSearch={setSearchQuery}
-        onCreateClick={handleCreateClick}
-      />
+      <SnippetSearchBar onSearch={setSearchQuery} onCreateClick={handleCreateClick} />
       <div className="mt-6">
         <div className="bg-muted/50 rounded-xl p-5 flex gap-2">
           <Tags onSelectTag={setSelectedTag} />
         </div>
-
         <div className={`${selectedSnippet ? "gap-6" : ""} mt-6`}>
-          <div
-            className={`transition-all duration-500 ${
-              selectedSnippet ? "hidden" : "w-full"
-            }`}
-          >
-            <CodeSnippetsGrid
-              snippets={filteredSnippets}
-              onSnippetSelect={setSelectedSnippet}
-            />
+          <div className={`transition-all duration-500 ${selectedSnippet ? "hidden" : "w-full"}`}>
+            <CodeSnippetsGrid snippets={filteredSnippets} onSnippetSelect={setSelectedSnippet} />
           </div>
           {selectedSnippet && (
-            <div
-              className={`transition-all duration-500 ${
-                selectedSnippet ? "flex-1" : "w-0"
-              } bg-muted/50 rounded-xl p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900`}
-            >
-              <ContentNote
-                snippet={selectedSnippet}
-                onClose={() => setSelectedSnippet(null)}
-                onEdit={handleEditClick}
-              />
+            <div className={`transition-all duration-500 ${selectedSnippet ? "flex-1" : "w-0"} bg-muted/50 rounded-xl p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900`}>
+              <ContentNote snippet={selectedSnippet} onClose={() => setSelectedSnippet(null)} onEdit={() => handleEditClick(selectedSnippet)}/>
             </div>
           )}
         </div>
       </div>
-
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-md:max-w-[370px]">
           <DialogHeader>
-            <DialogTitle>
-              {editMode ? "Edit Snippet" : "Create Snippet"}
-            </DialogTitle>
+            <DialogTitle>{editMode ? "Edit Snippet" : "Create Snippet"}</DialogTitle>
           </DialogHeader>
           <SnippetForm
-            initialData={
-              editMode && editSnippetIndex !== null
-                ? snippets[editSnippetIndex]
-                : undefined
-            }
+            initialData={editMode && editSnippetIndex !== null ? { functionName: snippets[editSnippetIndex].functionName, description: snippets[editSnippetIndex].description, code: snippets[editSnippetIndex].code, language: snippets[editSnippetIndex].language } : undefined}
             onSave={handleSaveSnippet}
           />
         </DialogContent>
