@@ -5,6 +5,7 @@ import CodeSnippetCard from "./codesnippet";
 interface CodeSnippetsGridProps {
   snippets: any[];
   onSnippetSelect: (snippet: any) => void;
+  onDelete: (snippet: any) => void;  
 }
 
 const CodeSnippetsGrid = ({ snippets, onSnippetSelect }: CodeSnippetsGridProps) => {

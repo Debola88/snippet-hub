@@ -285,6 +285,35 @@ const DashboardAllSnippetsView = () => {
     }
   };
 
+  const handleDeleteSnippet = async (snippetId: string) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You must be logged in to delete a snippet.");
+        return;
+      }
+  
+      const res = await fetch(`/api/snippet/${snippetId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      if (!res.ok) throw new Error("Failed to delete snippet.");
+  
+      // Remove deleted snippet from state
+      setSnippets((prev) => prev.filter((s) => s._id !== snippetId));
+  
+      // Close details panel if the deleted snippet was selected
+      if (selectedSnippet?._id === snippetId) {
+        setSelectedSnippet(null);
+      }
+    } catch (error) {
+      console.error("Error deleting snippet:", error);
+      alert("Error: Failed to delete snippet.");
+    }
+  };
+  
+
   // const handleDeleteSnippet = async (snippetId: string) => {
   //   try {
   //     const token = localStorage.getItem("token");
@@ -313,7 +342,7 @@ const DashboardAllSnippetsView = () => {
         </div>
         <div className={`${selectedSnippet ? "gap-6" : ""} mt-6`}>
           <div className={`transition-all duration-500 ${selectedSnippet ? "hidden" : "w-full"}`}>
-            <CodeSnippetsGrid snippets={filteredSnippets} onSnippetSelect={setSelectedSnippet} />
+            <CodeSnippetsGrid snippets={filteredSnippets} onSnippetSelect={setSelectedSnippet}   onDelete={handleDeleteSnippet} />
           </div>
           {selectedSnippet && (
             <div className={`transition-all duration-500 ${selectedSnippet ? "flex-1" : "w-0"} bg-muted/50 rounded-xl p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900`}>

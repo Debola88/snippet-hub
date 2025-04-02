@@ -55,7 +55,6 @@ const ContentNote: React.FC<ContentNoteProps> = ({ snippet, onClose, onEdit }) =
           className="rounded-md"
         />
       </div>
-
       <div className="mt-4 flex gap-2">
         <Button variant="outline" onClick={onClose}>
           Close

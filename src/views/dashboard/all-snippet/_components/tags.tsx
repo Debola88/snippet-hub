@@ -67,7 +67,7 @@ const Tags: React.FC<TagsProps> = ({ onSelectTag }) => {
           </Button>
         ))}
       </div>
-      <Button className="">Tags</Button>
+      <Button className="ml-auto">Tags</Button>
     </>
   );
 };

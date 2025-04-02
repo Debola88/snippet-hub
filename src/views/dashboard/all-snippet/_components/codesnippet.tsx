@@ -9,6 +9,7 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import { javascript } from "@codemirror/lang-javascript";
 
 interface CodeSnippetCardProps {
+  _id: string; 
   language: string;
   icon: React.ElementType;
   code: string;
@@ -16,10 +17,11 @@ interface CodeSnippetCardProps {
   description: string;
   dateCreated: string;
   onSnippetSelect: (snippet: any) => void;
-  onDelete: () => void;
+  onDelete: (id: string) => void; 
 }
 
 const CodeSnippetCard = ({
+  _id,
   language,
   icon: Icon,
   code,
@@ -57,8 +59,12 @@ const CodeSnippetCard = ({
             {isFavorite ? <MdFavorite /> : <MdFavoriteBorder />}
           </Button>
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
-        <span className="text-xs text-gray-500 dark:text-gray-400">{dateCreated}</span>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {description}
+        </p>
+        <span className="text-xs text-gray-500 dark:text-gray-400">
+          {dateCreated}
+        </span>
       </CardHeader>
       <CardContent className="mt-4">
         <div className="mb-2 flex items-center justify-between bg-gray-200 dark:bg-gray-700 p-2 rounded-t-lg text-xs text-gray-700 dark:text-gray-300">
@@ -103,7 +109,7 @@ const CodeSnippetCard = ({
             variant="ghost"
             size="icon"
             className="text-gray-500 hover:text-red-600"
-            onClick={onDelete}
+            onClick={() => onDelete(_id)}
           >
             <Trash />
           </Button>

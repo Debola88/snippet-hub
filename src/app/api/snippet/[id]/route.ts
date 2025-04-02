@@ -39,19 +39,31 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   await dbConnect();
+  
   const authResult = verifyAuth(req);
   if ("error" in authResult) return authResult;
+  
   const { userId } = authResult as TokenPayload;
 
   try {
-    const snippet = await Snippet.findOne({ _id: params.id });
+    console.log(`Attempting to delete snippet with ID: ${params.id}`);
+    
+    // Validate that ID exists
+    const snippet = await Snippet.findById(params.id);
     if (!snippet) {
       return NextResponse.json({ error: "Snippet not found" }, { status: 404 });
     }
+
+    // Check user authorization
     if (snippet.userId.toString() !== userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
-    await snippet.remove();
+
+    // Delete snippet using findByIdAndDelete()
+    await Snippet.findByIdAndDelete(params.id);
+
+    console.log(`Snippet deleted successfully: ${params.id}`);
+    
     return NextResponse.json({ message: "Snippet deleted successfully" }, { status: 200 });
   } catch (error) {
     console.error("Snippet deletion error:", error);
