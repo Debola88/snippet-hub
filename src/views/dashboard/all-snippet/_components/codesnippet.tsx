@@ -17,7 +17,7 @@ interface CodeSnippetCardProps {
   description: string;
   dateCreated: string;
   onSnippetSelect: (snippet: any) => void;
-  onDelete: (id: string) => void; 
+  onDelete: (_id: string) => void; 
 }
 
 const CodeSnippetCard = ({

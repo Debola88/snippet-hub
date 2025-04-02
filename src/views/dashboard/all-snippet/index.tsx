@@ -295,21 +295,23 @@ const DashboardAllSnippetsView = () => {
   
       const res = await fetch(`/api/snippet/${snippetId}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
   
-      if (!res.ok) throw new Error("Failed to delete snippet.");
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to delete snippet.");
+      }
   
-      // Remove deleted snippet from state
+      // Update UI after deletion
       setSnippets((prev) => prev.filter((s) => s._id !== snippetId));
   
-      // Close details panel if the deleted snippet was selected
-      if (selectedSnippet?._id === snippetId) {
-        setSelectedSnippet(null);
-      }
+      console.log("Snippet deleted successfully.");
     } catch (error) {
       console.error("Error deleting snippet:", error);
-      alert("Error: Failed to delete snippet.");
+      alert("Error deleting snippet:");
     }
   };
   
