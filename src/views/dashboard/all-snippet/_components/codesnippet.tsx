@@ -8,6 +8,9 @@ import CodeMirror from "@uiw/react-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { javascript } from "@codemirror/lang-javascript";
 
+
+
+
 interface CodeSnippetCardProps {
   _id: string; 
   language: string;
