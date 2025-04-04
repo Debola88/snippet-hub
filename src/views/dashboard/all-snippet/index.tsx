@@ -311,7 +311,7 @@ const DashboardAllSnippetsView = () => {
       console.log("Snippet deleted successfully.");
     } catch (error) {
       console.error("Error deleting snippet:", error);
-      alert("Error deleting snippet:");
+      alert("Error: " + error.message);
     }
   };
   
@@ -336,7 +336,7 @@ const DashboardAllSnippetsView = () => {
   // };
 
   return (
-    <div className="">
+    <div>
       <SnippetSearchBar onSearch={setSearchQuery} onCreateClick={handleCreateClick} />
       <div className="mt-6">
         <div className="bg-muted/50 rounded-xl p-5 flex gap-2">
