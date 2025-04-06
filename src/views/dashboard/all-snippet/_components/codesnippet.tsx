@@ -8,9 +8,6 @@ import CodeMirror from "@uiw/react-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { javascript } from "@codemirror/lang-javascript";
 
-
-
-
 interface CodeSnippetCardProps {
   _id: string; 
   language: string;
@@ -65,9 +62,9 @@ const CodeSnippetCard = ({
         <p className="text-sm text-gray-500 dark:text-gray-400">
           {description}
         </p>
-        <p className="text-xs text-gray-500 dark:text-gray-400">
+        <span className="text-xs text-gray-500 dark:text-gray-400">
           {dateCreated}
-        </p>
+        </span>
       </CardHeader>
       <CardContent className="mt-4">
         <div className="mb-2 flex items-center justify-between bg-gray-200 dark:bg-gray-700 p-2 rounded-t-lg text-xs text-gray-700 dark:text-gray-300">

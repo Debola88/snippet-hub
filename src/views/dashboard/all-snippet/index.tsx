@@ -7,7 +7,6 @@ import ContentNote from "./_components/contentnote";
 import CodeSnippetsGrid from "./_components/codesnippetgrid";
 import SnippetForm from "./_components/snippetform";
 import { IconType } from "react-icons/lib";
-import { SnackbarProvider } from "notistack";
 
 import {
   Dialog,
@@ -55,6 +54,7 @@ interface Snippet {
   description: string;
   code: string;
   createdAt: string;
+  userId: string;
 }
 
 export type SnippetFormData = {
@@ -185,7 +185,9 @@ const DashboardAllSnippetsView = () => {
   const [editMode, setEditMode] = useState(false);
   const [editSnippetIndex, setEditSnippetIndex] = useState<number | null>(null);
   const [snippets, setSnippets] = useState<Snippet[]>([]);
+  // const router = useRouter();
 
+  // Fetch snippets from API on mount
   useEffect(() => {
     const fetchSnippets = async () => {
       try {
@@ -194,8 +196,7 @@ const DashboardAllSnippetsView = () => {
         if (res.ok) {
           const mapped = data.map((snippet: Snippet) => ({
             ...snippet,
-            icon:
-              languageIconMap[normalizeLang(snippet.language)] || SiJavascript,
+            icon: languageIconMap[normalizeLang(snippet.language)] || SiJavascript,
           }));
           setSnippets(mapped);
         }
@@ -224,33 +225,30 @@ const DashboardAllSnippetsView = () => {
     setIsModalOpen(true);
   };
 
-  // const handleEditClick = (snippet: Snippet) => {
-  //   const index = snippets.findIndex((s) => s._id === snippet._id);
-  //   // const message = "Updated successfully";
-  //   if (index !== -1) {
-  //     // enqueueSnackbar(message, { variant: "success" });
-  //     // setEditMode(true);
-  //     // setEditSnippetIndex(index);
-  //     // setSelectedSnippet(snippet);
-  //     // setIsModalOpen(true);
-  //     console.log('Editing error');
-  //   }
-  // };
-
-  const handleEditClick = (updatedSnippet: Snippet) => {
-    setSnippets((prev) =>
-      prev.map((s) => (s._id === updatedSnippet._id ? updatedSnippet : s))
-    );
+  const handleEdit = async (updatedSnippet: Snippet) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`/api/snippet/${updatedSnippet._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // if needed
+        },
+        body: JSON.stringify(updatedSnippet),
+      });
   
-    // You can also make an API request here to persist the changes:
-    fetch(`/api/snippet/${updatedSnippet._id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify(updatedSnippet),
-    }).catch((error) => console.error("Failed to update snippet:", error));
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Update failed");
+  
+      // Update local state with the edited snippet
+      setSnippets((prev) =>
+        prev.map((s) => (s._id === updatedSnippet._id ? result : s))
+      );
+      alert("Snippet updated successfully!");
+    } catch (error) {
+      console.error("Update failed:", error);
+      alert("Failed to update snippet.");
+    }
   };
   
   
@@ -262,12 +260,9 @@ const DashboardAllSnippetsView = () => {
         alert("You must be logged in to add or edit a snippet.");
         return;
       }
-  
+
       let res;
-      let updatedSnippet: Snippet;
-  
       if (editMode && selectedSnippet) {
-        // Edit existing snippet
         res = await fetch(`/api/snippet/${selectedSnippet._id}`, {
           method: "PUT",
           headers: {
@@ -276,14 +271,6 @@ const DashboardAllSnippetsView = () => {
           },
           body: JSON.stringify(data),
         });
-  
-        if (!res.ok) throw new Error("Failed to update snippet.");
-  
-        updatedSnippet = { ...selectedSnippet, ...data };
-  
-        setSnippets((prev) =>
-          prev.map((s) => (s._id === selectedSnippet._id ? updatedSnippet : s))
-        );
       } else {
         res = await fetch("/api/snippet", {
           method: "POST",
@@ -293,25 +280,29 @@ const DashboardAllSnippetsView = () => {
           },
           body: JSON.stringify(data),
         });
-  
-        const result = await res.json();
-        if (!res.ok) throw new Error("Failed to save snippet.");
-  
-        updatedSnippet = {
-          ...result,
-          icon: languageIconMap[normalizeLang(result.language)] || SiJavascript,
-        };
-  
-        setSnippets((prev) => [updatedSnippet, ...prev]);
       }
-  
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Failed to save snippet.");
+
+      const snippetWithIcon: Snippet = {
+        ...result,
+        icon: languageIconMap[normalizeLang(result.language)] || SiJavascript,
+      };
+
+      if (editMode && selectedSnippet) {
+        setSnippets((prev) =>
+          prev.map((s) => (s._id === selectedSnippet._id ? snippetWithIcon : s))
+        );
+        setSelectedSnippet(snippetWithIcon);
+      } else {
+        setSnippets([snippetWithIcon, ...snippets]);
+      }
       setIsModalOpen(false);
     } catch (error: any) {
       console.error("Error saving snippet:", error);
       alert("Error: " + error.message);
     }
   };
-  
 
   const handleDeleteSnippet = async (snippetId: string) => {
     try {
@@ -320,28 +311,29 @@ const DashboardAllSnippetsView = () => {
         alert("You must be logged in to delete a snippet.");
         return;
       }
-
+  
       const res = await fetch(`/api/snippet/${snippetId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.error || "Failed to delete snippet.");
       }
-
+  
       // Update UI after deletion
       setSnippets((prev) => prev.filter((s) => s._id !== snippetId));
-
+  
       console.log("Snippet deleted successfully.");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error deleting snippet:", error);
-      alert("Error: " + error.message);
+      alert("Error deleting snippet:");
     }
   };
+  
 
   // const handleDeleteSnippet = async (snippetId: string) => {
   //   try {
@@ -363,39 +355,19 @@ const DashboardAllSnippetsView = () => {
   // };
 
   return (
-    <div>
-      <SnackbarProvider />
-      <SnippetSearchBar
-        onSearch={setSearchQuery}
-        onCreateClick={handleCreateClick}
-      />
+    <div className="">
+      <SnippetSearchBar onSearch={setSearchQuery} onCreateClick={handleCreateClick} />
       <div className="mt-6">
         <div className="bg-muted/50 rounded-xl p-5 flex gap-2">
           <Tags onSelectTag={setSelectedTag} />
         </div>
         <div className={`${selectedSnippet ? "gap-6" : ""} mt-6`}>
-          <div
-            className={`transition-all duration-500 ${
-              selectedSnippet ? "hidden" : "w-full"
-            }`}
-          >
-            <CodeSnippetsGrid
-              snippets={filteredSnippets}
-              onSnippetSelect={setSelectedSnippet}
-              onDelete={handleDeleteSnippet}
-            />
+          <div className={`transition-all duration-500 ${selectedSnippet ? "hidden" : "w-full"}`}>
+            <CodeSnippetsGrid snippets={filteredSnippets} onSnippetSelect={setSelectedSnippet}   onDelete={handleDeleteSnippet} />
           </div>
           {selectedSnippet && (
-            <div
-              className={`transition-all duration-500 ${
-                selectedSnippet ? "flex-1" : "w-0"
-              } bg-muted/50 rounded-xl p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900`}
-            >
-              <ContentNote
-                snippet={selectedSnippet}
-                onClose={() => setSelectedSnippet(null)}
-                onEdit={() => handleEditClick(selectedSnippet)}
-              />
+            <div className={`transition-all duration-500 ${selectedSnippet ? "flex-1" : "w-0"} bg-muted/50 rounded-xl p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900`}>
+              <ContentNote snippet={selectedSnippet} onClose={() => setSelectedSnippet(null)} onEdit={() => handleEdit(selectedSnippet)}/>
             </div>
           )}
         </div>
@@ -403,39 +375,14 @@ const DashboardAllSnippetsView = () => {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="max-md:max-w-[370px]">
           <DialogHeader>
-            <DialogTitle>
-              {editMode ? "Edit Snippet" : "Create Snippet"}
-            </DialogTitle>
+            <DialogTitle>{editMode ? "Edit Snippet" : "Create Snippet"}</DialogTitle>
           </DialogHeader>
           <SnippetForm
-            initialData={
-              editMode && editSnippetIndex
-                ? {
-                    functionName: snippets[editSnippetIndex].functionName,
-                    description: snippets[editSnippetIndex].description,
-                    code: snippets[editSnippetIndex].code,
-                    language: snippets[editSnippetIndex].language,
-                  }
-                : undefined
-            }
+            initialData={editMode && editSnippetIndex !== null ? { functionName: snippets[editSnippetIndex].functionName, description: snippets[editSnippetIndex].description, code: snippets[editSnippetIndex].code, language: snippets[editSnippetIndex].language } : undefined}
             onSave={handleSaveSnippet}
           />
         </DialogContent>
       </Dialog>
-
-      {/* <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-              <DialogContent className="bg-sidebar max-md:max-w-[350px]">
-                <DialogHeader>
-                  <DialogTitle className="text-gray-800 dark:text-white">
-                    Success
-                  </DialogTitle>
-                </DialogHeader>
-                <p className="text-gray-600 dark:text-gray-300">{modalMessage}</p>
-                <DialogFooter>
-                  <Button onClick={handleModalConfirm}>OK</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog> */}
     </div>
   );
 };
