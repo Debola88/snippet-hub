@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { TokenPayload, verifyAuth } from "@/app/middleware/auth";
 import Snippet from "@/app/models/snippet";
 import { dbConnect } from "@/lib/mongodb";

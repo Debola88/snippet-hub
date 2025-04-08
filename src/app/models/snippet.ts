@@ -8,6 +8,8 @@ export interface ISnippet extends Document {
   code: string;
   createdAt: Date;
   updatedAt: Date;
+  favoritedBy: mongoose.Types.ObjectId[]; 
+
 }
 
 const snippetSchema = new Schema<ISnippet>(
@@ -17,6 +19,7 @@ const snippetSchema = new Schema<ISnippet>(
     language: { type: String, required: true },
     description: { type: String, required: true },
     code: { type: String, required: true },
+    favoritedBy: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
   },
   { timestamps: true }
 );

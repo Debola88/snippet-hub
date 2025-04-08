@@ -9,6 +9,7 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import { javascript } from "@codemirror/lang-javascript";
 
 interface CodeSnippetCardProps {
+  userId: string;
   _id: string; 
   language: string;
   icon: React.ElementType;
@@ -33,7 +34,23 @@ const CodeSnippetCard = ({
 }: CodeSnippetCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
   const shortCode = code.split("\n").slice(0, 3).join("\n");
-
+  
+  const toggleFavorite = async () => {
+    try {
+      const res = await fetch(`/api/snippet/${_id}/favorite`, {
+        method: "PATCH",
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setIsFavorite(data.favorited);
+      } else {
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.error("Failed to toggle favorite:", error);
+    }
+  };
+  
   const getLanguageExtension = () => {
     return javascript();
   };
@@ -53,7 +70,7 @@ const CodeSnippetCard = ({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setIsFavorite(!isFavorite)}
+            onClick={toggleFavorite}
             className="text-pink-600 hover:text-pink-700"
           >
             {isFavorite ? <MdFavorite /> : <MdFavoriteBorder />}

@@ -1,10 +1,9 @@
-// middleware/auth.ts
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 
 export interface TokenPayload {
   userId: string;
-  // add other fields if needed
 }
 
 export function verifyAuth(req: Request): TokenPayload | NextResponse {
