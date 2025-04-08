@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TokenPayload, verifyAuth } from "@/app/middleware/auth";
 import Snippet from "@/app/models/snippet";
 import { dbConnect } from "@/lib/mongodb";
@@ -26,8 +27,8 @@ export async function PATCH(
       snippet.favoritedBy = [];
     }
 
-    const isFavorited = snippet.favoritedBy.includes(userId);
-
+    const isFavorited = snippet.favoritedBy.some((id: any) => id.toString() === userId.toString());
+    
     if (isFavorited) {
       snippet.favoritedBy.pull(userId);
     } else {

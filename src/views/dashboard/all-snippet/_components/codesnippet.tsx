@@ -46,6 +46,8 @@ const CodeSnippetCard = ({
       } else {
         console.error(data.error);
       }
+      // setIsFavorite((prev) => !prev);
+      setIsFavorite(!isFavorite);
     } catch (error) {
       console.error("Failed to toggle favorite:", error);
     }
