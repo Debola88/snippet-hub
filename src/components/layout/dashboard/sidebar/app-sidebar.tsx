@@ -75,12 +75,12 @@ const data = {
     },
     {
       title: "Favorites",
-      url: "#",
+      url: `${APP_LINKS.DASHBOARD_FAVORITE}`,
       icon: IoMdHeartEmpty,
       items: [
         {
           title: "Genesis",
-          url: "#",
+          url: `${APP_LINKS.DASHBOARD_FAVORITE}`,
         },
         {
           title: "Explorer",

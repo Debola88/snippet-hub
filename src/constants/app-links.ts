@@ -3,8 +3,8 @@ export enum APP_LINKS {
   // Communities
 
   // Dashboard
-  DASHBOARD_OVERVIEW = "/dashboard",
-  DASHBOARD_ALLSNIPPET = "/dashboard/all-snippet",
+  DASHBOARD_OVERVIEW = "/dashboard/all-snippet",
+  // DASHBOARD_ALLSNIPPET = "/dashboard/all-snippet",
   DASHBOARD_FAVORITE = "/dashboard/favorite",
   DASHBOARD_TRASH = "/dashboard/trash",
 

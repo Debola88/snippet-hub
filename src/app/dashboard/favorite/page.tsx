@@ -1,9 +1,8 @@
-import React from 'react'
+import DashboardFavoriteView from "@/views/dashboard/favorite";
+import React from "react";
 
 const DashboardFavoritePage = () => {
-  return (
-    <div>page</div>
-  )
-}
+  return <DashboardFavoriteView />;
+};
 
-export default DashboardFavoritePage
+export default DashboardFavoritePage;
