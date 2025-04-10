@@ -232,7 +232,7 @@ const DashboardAllSnippetsView = () => {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // if needed
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(updatedSnippet),
       });
@@ -240,7 +240,6 @@ const DashboardAllSnippetsView = () => {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Update failed");
   
-      // Update local state with the edited snippet
       setSnippets((prev) =>
         prev.map((s) => (s._id === updatedSnippet._id ? result : s))
       );
@@ -334,25 +333,6 @@ const DashboardAllSnippetsView = () => {
     }
   };
   
-
-  // const handleDeleteSnippet = async (snippetId: string) => {
-  //   try {
-  //     const token = localStorage.getItem("token");
-  //     if (!token) {
-  //       alert("You must be logged in to delete a snippet.");
-  //       return;
-  //     }
-  //     const res = await fetch(`/api/snippet/${snippetId}`, {
-  //       method: "DELETE",
-  //       headers: { Authorization: `Bearer ${token}` },
-  //     });
-  //     if (!res.ok) throw new Error("Failed to delete snippet.");
-  //     setSnippets((prev) => prev.filter((s) => s._id !== snippetId));
-  //     setSelectedSnippet(null);
-  //   } catch (error) {
-  //     console.error("Error deleting snippet:", error);
-  //   }
-  // };
 
   return (
     <div className="">

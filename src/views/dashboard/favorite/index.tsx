@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React from "react";
 import { useEffect, useState } from "react";
@@ -46,10 +48,15 @@ interface Snippet {
   favoritedBy?: string[];
 }
 
-const DashboardFavoriteView = () => {
+interface CodeSnippetsGridProps {
+  onSnippetSelect: (snippet: any) => void;
+}
+
+const DashboardFavoriteView = ({ onSnippetSelect }: CodeSnippetsGridProps) => {
   const [favorites, setFavorites] = useState<Snippet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
 
   const languageIconMap: Record<string, React.ElementType> = {
     javascript: SiJavascript,
@@ -130,26 +137,36 @@ const DashboardFavoriteView = () => {
     fetchFavorites();
   }, []);
 
-  const handleDelete = async (snippetId: string) => {
+  const handleDeleteSnippet = async (snippetId: string) => {
     try {
-      const res = await fetch(`/api/snippets/${snippetId}`, {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You must be logged in to delete a snippet.");
+        return;
+      }
+  
+      const res = await fetch(`/api/snippet/${snippetId}`, {
         method: "DELETE",
         headers: {
-          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        credentials: "include",
       });
-
+  
       if (!res.ok) {
-        throw new Error("Failed to delete snippet");
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to delete snippet.");
       }
-
-      setFavorites(favorites.filter((snippet) => snippet._id !== snippetId));
-    } catch (err) {
-      console.error("Failed to delete snippet", err);
-      setError(err instanceof Error ? err.message : "Failed to delete snippet");
+  
+      // Update UI after deletion
+      setFavorites((prev) => prev.filter((s) => s._id !== snippetId));
+  
+      console.log("Snippet deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting snippet:", error);
+      alert("Error deleting snippet:");
     }
   };
+  
 
   const handleSnippetSelect = (snippet: Snippet) => {
     // Implement what happens when a snippet is selected
@@ -192,7 +209,7 @@ const DashboardFavoriteView = () => {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">My Favorite Snippets</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        {favorites.map((snippet: Snippet) => (
+        {favorites.map((snippet: any) => (
           <CodeSnippetCard
             key={snippet._id}
             _id={snippet._id}
@@ -211,8 +228,8 @@ const DashboardFavoriteView = () => {
               }
             )}
             favoritedBy={snippet.favoritedBy}
-            onSnippetSelect={handleSnippetSelect}
-            onDelete={handleDelete}
+            onSnippetSelect={snippet.onSnippetSelect}
+            onDelete={handleDeleteSnippet}
           />
         ))}
       </div>
