@@ -13,10 +13,10 @@ const CodeSnippetsGrid = ({ snippets, onSnippetSelect, onDelete }: CodeSnippetsG
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {snippets.map((snippet) => (
         <CodeSnippetCard
-          key={snippet._id} // Use _id instead of index
+          key={snippet._id}
           {...snippet}
           onSnippetSelect={onSnippetSelect}
-          onDelete={() => onDelete(snippet._id)} // Pass only the _id
+          onDelete={() => onDelete(snippet._id)}
         />
       ))}
     </div>

@@ -17,6 +17,7 @@ interface CodeSnippetCardProps {
   functionName: string;
   description: string;
   dateCreated: string;
+  favoritedBy?: string[];
   onSnippetSelect: (snippet: any) => void;
   onDelete: (_id: string) => void; 
 }
@@ -29,27 +30,44 @@ const CodeSnippetCard = ({
   functionName,
   description,
   dateCreated,
+  favoritedBy = [],
+  userId,
   onSnippetSelect,
   onDelete,
 }: CodeSnippetCardProps) => {
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(favoritedBy.includes(userId));
   const shortCode = code.split("\n").slice(0, 3).join("\n");
   
   const toggleFavorite = async () => {
     try {
+      const token = localStorage.getItem('token'); // Or your token storage method
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+  
       const res = await fetch(`/api/snippet/${_id}/favorite`, {
         method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
       });
-      const data = await res.json();
-      if (res.ok) {
-        setIsFavorite(data.favorited);
-      } else {
-        console.error(data.error);
+  
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Failed to toggle favorite");
       }
-      // setIsFavorite((prev) => !prev);
-      setIsFavorite(!isFavorite);
-    } catch (error) {
-      console.error("Failed to toggle favorite:", error);
+  
+      const data = await res.json();
+      setIsFavorite(data.favorited);
+      
+    } catch (error: any) {
+      console.error("Favorite toggle failed:", error);
+      if (error.message.includes("Unauthorized") || 
+          error.message.includes("Invalid token")) {
+        // Handle token expiration - redirect to login or refresh token
+        // router.push('/login');
+      }
     }
   };
   
