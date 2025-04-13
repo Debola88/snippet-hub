@@ -1,10 +1,11 @@
 "use client";
-
+import { useEffect, useState } from "react";
 import { Collapsible } from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
@@ -24,6 +25,32 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const [favoriteCount, setFavoriteCount] = useState(0);
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch("/api/snippet/favorite", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          setFavoriteCount(data.length || 0);
+        }
+      } catch (err) {
+        console.error("Error fetching favorites", err);
+      }
+    };
+
+    fetchFavorites();
+  }, []);
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -44,6 +71,9 @@ export function NavMain({
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
                 </SidebarMenuButton>
+                {item.title === "Favorites" && favoriteCount > 0 && (
+                  <SidebarMenuBadge>{favoriteCount}</SidebarMenuBadge>
+                )}
               </a>
             </SidebarMenuItem>
           </Collapsible>

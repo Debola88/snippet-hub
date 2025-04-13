@@ -35,6 +35,7 @@ import {
   SiReact,
   SiSharp,
 } from "react-icons/si";
+import ContentNote from "../all-snippet/_components/contentnote";
 
 interface Snippet {
   _id: string;
@@ -49,14 +50,16 @@ interface Snippet {
 }
 
 interface CodeSnippetsGridProps {
-  onSnippetSelect: (snippet: any) => void;
+  onSnippetSelect?: (snippet: Snippet) => void;
 }
 
-const DashboardFavoriteView = ({ onSnippetSelect }: CodeSnippetsGridProps) => {
+const DashboardFavoriteView = ({
+  onSnippetSelect = (snippet: Snippet) => {},
+}: CodeSnippetsGridProps) => {
   const [favorites, setFavorites] = useState<Snippet[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const [selectedSnippet, setSelectedSnippet] = useState<Snippet | null>(null);
 
   const languageIconMap: Record<string, React.ElementType> = {
     javascript: SiJavascript,
@@ -92,13 +95,18 @@ const DashboardFavoriteView = ({ onSnippetSelect }: CodeSnippetsGridProps) => {
     vue: SiVuedotjs,
     react: SiReact,
   };
-  
-  
 
   const getIconForLanguage = (language: string): React.ElementType => {
     return languageIconMap[language.toLowerCase()] || FileCode2;
   };
-  
+
+  const handleSnippetSelect = (snippet: Snippet) => {
+    setSelectedSnippet(snippet);
+  };
+
+  const handleCloseContentNote = () => {
+    setSelectedSnippet(null);
+  };
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -144,34 +152,33 @@ const DashboardFavoriteView = ({ onSnippetSelect }: CodeSnippetsGridProps) => {
         alert("You must be logged in to delete a snippet.");
         return;
       }
-  
+
       const res = await fetch(`/api/snippet/${snippetId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(errorData.error || "Failed to delete snippet.");
       }
-  
+
       // Update UI after deletion
       setFavorites((prev) => prev.filter((s) => s._id !== snippetId));
-  
+
       console.log("Snippet deleted successfully.");
     } catch (error) {
       console.error("Error deleting snippet:", error);
       alert("Error deleting snippet:");
     }
   };
-  
 
-  const handleSnippetSelect = (snippet: Snippet) => {
-    // Implement what happens when a snippet is selected
-    console.log("Selected snippet:", snippet);
-  };
+  // const handleSnippetSelect = (snippet: Snippet) => {
+  //   // Implement what happens when a snippet is selected
+  //   console.log("Selected snippet:", snippet);
+  // };
 
   if (loading) {
     return (
@@ -208,7 +215,25 @@ const DashboardFavoriteView = ({ onSnippetSelect }: CodeSnippetsGridProps) => {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">My Favorite Snippets</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      {selectedSnippet && (
+        <div className={`transition-all duration-500 ${selectedSnippet ? "flex-1" : "w-0"} bg-muted/50 rounded-xl p-5 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900`}>
+          <ContentNote
+            snippet={selectedSnippet}
+            onClose={handleCloseContentNote}
+            onEdit={(updatedSnippet) => {
+              // Update snippet in the list if needed
+              setFavorites((prev) =>
+                prev.map((s) =>
+                  s._id === updatedSnippet._id ? updatedSnippet : s
+                )
+              );
+              setSelectedSnippet(null);
+            }}
+          />
+        </div>
+      )}
+
+      <div className={`grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 transition-all duration-500 ${selectedSnippet ? "hidden" : "w-auto"}`}>
         {favorites.map((snippet: any) => (
           <CodeSnippetCard
             key={snippet._id}
@@ -228,7 +253,7 @@ const DashboardFavoriteView = ({ onSnippetSelect }: CodeSnippetsGridProps) => {
               }
             )}
             favoritedBy={snippet.favoritedBy}
-            onSnippetSelect={snippet.onSnippetSelect}
+            onSnippetSelect={() => handleSnippetSelect(snippet)}
             onDelete={handleDeleteSnippet}
           />
         ))}

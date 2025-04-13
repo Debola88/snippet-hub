@@ -187,7 +187,6 @@ const DashboardAllSnippetsView = () => {
   const [snippets, setSnippets] = useState<Snippet[]>([]);
   // const router = useRouter();
 
-  // Fetch snippets from API on mount
   useEffect(() => {
     const fetchSnippets = async () => {
       try {
@@ -323,7 +322,6 @@ const DashboardAllSnippetsView = () => {
         throw new Error(errorData.error || "Failed to delete snippet.");
       }
   
-      // Update UI after deletion
       setSnippets((prev) => prev.filter((s) => s._id !== snippetId));
   
       console.log("Snippet deleted successfully.");

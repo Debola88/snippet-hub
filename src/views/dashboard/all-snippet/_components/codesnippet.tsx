@@ -18,7 +18,13 @@ interface CodeSnippetCardProps {
   description: string;
   dateCreated: string;
   favoritedBy?: string[];
-  onSnippetSelect: (snippet: any) => void;
+  onSnippetSelect: (snippet: {
+    functionName: string;
+    description: string;
+    code: string;
+    language: string;
+  }) => void;
+  
   onDelete: (_id: string) => void; 
 }
 
@@ -40,7 +46,7 @@ const CodeSnippetCard = ({
   
   const toggleFavorite = async () => {
     try {
-      const token = localStorage.getItem('token'); // Or your token storage method
+      const token = localStorage.getItem('token');
       if (!token) {
         throw new Error("No authentication token found");
       }
