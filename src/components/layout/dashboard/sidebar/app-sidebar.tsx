@@ -6,9 +6,9 @@ import { AudioWaveform, Command, Settings2 } from "lucide-react";
 import { BsTrash } from "react-icons/bs";
 import { IoMdHeartEmpty } from "react-icons/io";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
-import { IoLogoJavascript } from "react-icons/io5";
-import { SiCplusplus } from "react-icons/si";
-import { AiOutlinePython } from "react-icons/ai";
+// import { IoLogoJavascript } from "react-icons/io5";
+// import { SiCplusplus } from "react-icons/si";
+// import { AiOutlinePython } from "react-icons/ai";
 import DataObjectIcon from "@mui/icons-material/DataObject";
 import { NavMain } from "@/components/layout/dashboard/sidebar/nav-main";
 import { NavProjects } from "@/components/layout/dashboard/sidebar/nav-projects";
@@ -170,23 +170,6 @@ export function AppSidebar({
         ],
       },
     ],
-    languages: [
-      {
-        name: "Javascript",
-        url: "#",
-        icon: IoLogoJavascript,
-      },
-      {
-        name: "Python",
-        url: "#",
-        icon: AiOutlinePython,
-      },
-      {
-        name: "C++",
-        url: "#",
-        icon: SiCplusplus,
-      },
-    ],
   };
 
   return (
@@ -196,7 +179,7 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects languages={data.languages} />
+        <NavProjects/>
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />
