@@ -6,8 +6,17 @@ import { TokenPayload, verifyAuth } from "@/app/middleware/auth";
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await (context.params);
+  
+  if (!id) {
+    return NextResponse.json(
+      { error: "Snippet ID is required" },
+      { status: 400 }
+    );
+  }
+
   await dbConnect();
   
   const authResult = verifyAuth(req);
@@ -18,11 +27,12 @@ export async function PUT(
     );
   }
   
-  const { userId } = authResult as TokenPayload;
+  // const { userId } = authResult as TokenPayload;
 
   try {
-    const { functionName, language, description, code } = await req.json();
+    const { _id, functionName, language, description, code } = await req.json();
     
+    console.log("SNI:PET ID", _id)
     if (!functionName || !language || !code) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -32,8 +42,7 @@ export async function PUT(
 
     const updatedSnippet = await Snippet.findOneAndUpdate(
       { 
-        _id: params.id,
-        userId
+        _id: _id,
       },
       { 
         functionName, 
@@ -42,11 +51,9 @@ export async function PUT(
         code,
         updatedAt: new Date()
       },
-      { 
-        new: true,
-        runValidators: true
-      }
     );
+
+    console.log("UPDATED", updatedSnippet, code)
 
     if (!updatedSnippet) {
       return NextResponse.json(
@@ -71,7 +78,6 @@ export async function PUT(
     );
   }
 }
-
 export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }
