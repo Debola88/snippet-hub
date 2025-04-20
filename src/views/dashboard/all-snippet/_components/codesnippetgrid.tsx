@@ -8,7 +8,12 @@ interface CodeSnippetsGridProps {
   onDelete: (id: string) => void;
 }
 
-const CodeSnippetsGrid = ({ snippets, onSnippetSelect, onDelete }: CodeSnippetsGridProps) => {
+const CodeSnippetsGrid = ({
+  snippets,
+  onSnippetSelect,
+  onDelete,
+}: CodeSnippetsGridProps) => {
+  console.log("snippet", snippets)
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {snippets.map((snippet) => (

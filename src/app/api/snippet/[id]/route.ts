@@ -27,8 +27,6 @@ export async function PUT(
     );
   }
   
-  // const { userId } = authResult as TokenPayload;
-
   try {
     const { _id, functionName, language, description, code } = await req.json();
     
@@ -92,18 +90,15 @@ export async function DELETE(
   try {
     console.log(`Attempting to delete snippet with ID: ${params.id}`);
     
-    // Validate that ID exists
     const snippet = await Snippet.findById(params.id);
     if (!snippet) {
       return NextResponse.json({ error: "Snippet not found" }, { status: 404 });
     }
 
-    // Check user authorization
     if (snippet.userId.toString() !== userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    // Delete snippet using findByIdAndDelete()
     await Snippet.findByIdAndDelete(params.id);
 
     console.log(`Snippet deleted successfully: ${params.id}`);

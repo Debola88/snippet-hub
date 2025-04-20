@@ -6,17 +6,18 @@ import { MdFavoriteBorder, MdFavorite } from "react-icons/md";
 import CodeMirror from "@uiw/react-codemirror";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { javascript } from "@codemirror/lang-javascript";
-import { FaCode } from "react-icons/fa"; // Default icon import
+import { FaCode } from "react-icons/fa";
+import { useToast } from "@/hooks/use-toast";
 
 interface CodeSnippetCardProps {
   userId: string;
   _id: string;
   language: string;
-  icon?: React.ElementType; // Made optional
+  icon?: React.ElementType;
   code: string;
   functionName: string;
   description: string;
-  dateCreated: string;
+  createdAt: string;
   favoritedBy?: string[];
   onSnippetSelect: (snippet: {
     _id: string;
@@ -31,11 +32,11 @@ interface CodeSnippetCardProps {
 const CodeSnippetCard = ({
   _id,
   language,
-  icon: Icon = FaCode, // Default icon if none provided
+  icon: Icon = FaCode,
   code,
   functionName,
   description,
-  dateCreated,
+  createdAt,
   favoritedBy = [],
   userId,
   onSnippetSelect,
@@ -43,10 +44,11 @@ const CodeSnippetCard = ({
 }: CodeSnippetCardProps) => {
   const [isFavorite, setIsFavorite] = useState(favoritedBy.includes(userId));
   const shortCode = code.split("\n").slice(0, 3).join("\n");
+  const { toast } = useToast();
 
   const toggleFavorite = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       if (!token) {
         throw new Error("No authentication token found");
       }
@@ -54,9 +56,9 @@ const CodeSnippetCard = ({
       const res = await fetch(`/api/snippet/${_id}/favorite`, {
         method: "PATCH",
         headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
       });
 
       if (!res.ok) {
@@ -69,10 +71,11 @@ const CodeSnippetCard = ({
       return data;
     } catch (error: unknown) {
       console.error("Favorite toggle failed:", error);
-      if (error instanceof Error && 
-          (error.message.includes("Unauthorized") || 
-           error.message.includes("Invalid token"))) {
-        // Handle token expiration
+      if (
+        error instanceof Error &&
+        (error.message.includes("Unauthorized") ||
+          error.message.includes("Invalid token"))
+      ) {
       }
       throw error;
     }
@@ -89,7 +92,13 @@ const CodeSnippetCard = ({
           <CardTitle
             className="text-lg font-bold text-gray-900 dark:text-white cursor-pointer hover:underline"
             onClick={() =>
-              onSnippetSelect({ _id, functionName, description, code, language })
+              onSnippetSelect({
+                _id,
+                functionName,
+                description,
+                code,
+                language,
+              })
             }
           >
             {functionName}
@@ -108,7 +117,11 @@ const CodeSnippetCard = ({
           {description}
         </p>
         <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          {new Date(dateCreated).toLocaleDateString()}
+          {new Date(createdAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}{" "}
         </span>
       </CardHeader>
       <CardContent className="mt-4">
@@ -119,7 +132,7 @@ const CodeSnippetCard = ({
         <div className="overflow-x-auto">
           <CodeMirror
             value={shortCode}
-            height="150px"
+            height="100px"
             theme={oneDark}
             extensions={[getLanguageExtension()]}
             readOnly={true}
@@ -130,17 +143,21 @@ const CodeSnippetCard = ({
             }}
           />
         </div>
-        {code.split("\n").length > 3 && (
-          <Button
-            variant="ghost"
-            className="text-blue-600 dark:text-blue-400 text-sm mt-2"
-            onClick={() =>
-              onSnippetSelect({ _id, functionName, description, code, language })
-            }
-          >
-            Show More
-          </Button>
-        )}
+        <Button
+          variant="ghost"
+          className="text-blue-600 dark:text-blue-400 text-sm mt-2"
+          onClick={() =>
+            onSnippetSelect({
+              _id,
+              functionName,
+              description,
+              code,
+              language,
+            })
+          }
+        >
+          Show More
+        </Button>
       </CardContent>
       <div className="mt-auto px-6 pb-4 flex justify-between items-center text-sm">
         <div className="flex items-center gap-1 relative">
@@ -154,7 +171,13 @@ const CodeSnippetCard = ({
             variant="ghost"
             size="icon"
             className="text-gray-500 hover:text-red-600"
-            onClick={() => onDelete(_id)}
+            onClick={() => {
+              onDelete(_id);
+              toast({
+                description: "Snippet has been deleted",
+                variant: "destructive",
+              });
+            }}
             aria-label="Delete snippet"
           >
             <Trash />

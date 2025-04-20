@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState, useEffect } from "react";
@@ -8,14 +7,14 @@ import ContentNote from "./_components/contentnote";
 import CodeSnippetsGrid from "./_components/codesnippetgrid";
 import SnippetForm from "./_components/snippetform";
 import { IconType } from "react-icons/lib";
-
+import { useToast } from "@/hooks/use-toast";
+import { useSearchParams } from 'next/navigation';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
 import {
   SiJavascript,
   SiTypescript,
@@ -180,18 +179,37 @@ const normalizeLang = (lang: string) => {
 
 const DashboardAllSnippetsView = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTag, setSelectedTag] = useState("All");
   const [selectedSnippet, setSelectedSnippet] = useState<Snippet | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editSnippetIndex, setEditSnippetIndex] = useState<number | null>(null);
   const [snippets, setSnippets] = useState<Snippet[]>([]);
-  // const router = useRouter();
+  const [selectedFunction, setSelectedFunction] = useState("All");
+  const searchParams = useSearchParams();
+  const selectedLanguage = searchParams.get("lang");
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchSnippets = async () => {
       try {
-        const res = await fetch("/api/snippet");
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.log("No token found");
+          return;
+        }
+
+        const res = await fetch("/api/snippet", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          window.location.reload();
+          return;
+        }
+
         const data = await res.json();
         if (res.ok) {
           const mapped = data.map((snippet: Snippet) => ({
@@ -203,20 +221,35 @@ const DashboardAllSnippetsView = () => {
         }
       } catch (error) {
         console.error("Failed to fetch snippets:", error);
+        toast({
+          title: "Error",
+          description: "Failed to fetch snippets",
+          variant: "destructive",
+        });
       }
     };
 
     fetchSnippets();
-  }, []);
+  }, [toast]);
+
+  const functionNames = Array.from(
+    new Set(snippets.map((snippet) => snippet.functionName))
+  );
 
   const filteredSnippets = snippets.filter((snippet) => {
-    const matchesSearch = snippet.functionName
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesTag =
-      selectedTag === "All" ||
-      snippet.language.toLowerCase() === selectedTag.toLowerCase();
-    return matchesSearch && matchesTag;
+    const matchesSearch =
+      snippet.functionName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      snippet.description.toLowerCase().includes(searchQuery.toLowerCase());
+  
+    const matchesLanguage =
+      !selectedLanguage ||
+      snippet.language.toLowerCase() === selectedLanguage.toLowerCase();
+  
+    const matchesFunction =
+      selectedFunction === "All" || 
+      snippet.functionName === selectedFunction;
+  
+    return matchesSearch && matchesLanguage && matchesFunction;
   });
 
   const handleCreateClick = () => {
@@ -242,8 +275,8 @@ const DashboardAllSnippetsView = () => {
       const result = await res.json();
       if (!res.ok) throw new Error(result.error || "Update failed");
 
-      alert("Snippet updated successfully!");
-      return result
+      // alert("Snippet updated successfully!");
+      return result;
     } catch (error) {
       console.error("Update failed:", error);
       alert("Failed to update snippet.");
@@ -286,15 +319,15 @@ const DashboardAllSnippetsView = () => {
         icon: languageIconMap[normalizeLang(result.language)] || SiJavascript,
       };
 
-      // if (editMode && selectedSnippet) {
-      //   setSnippets((prev) =>
-      //     prev.map((s) => (s._id === selectedSnippet._id ? snippetWithIcon : s))
-      //   );
-      //   // setSelectedSnippet(snippetWithIcon);
-      // } else {
-      //   // setSnippets([snippetWithIcon, ...snippets]);
-      // }
-      // // setIsModalOpen(false);
+      if (editMode && selectedSnippet) {
+        setSnippets((prev) =>
+          prev.map((s) => (s._id === selectedSnippet._id ? snippetWithIcon : s))
+        );
+        setSelectedSnippet(snippetWithIcon);
+      } else {
+        setSnippets([snippetWithIcon, ...snippets]);
+      }
+      setIsModalOpen(false);
     } catch (error: any) {
       console.error("Error saving snippet:", error);
       alert("Error: " + error.message);
@@ -321,7 +354,7 @@ const DashboardAllSnippetsView = () => {
         throw new Error(errorData.error || "Failed to delete snippet.");
       }
 
-      // setSnippets((prev) => prev.filter((s) => s._id !== snippetId));
+      setSnippets((prev) => prev.filter((s) => s._id !== snippetId));
 
       console.log("Snippet deleted successfully.");
     } catch (error) {
@@ -338,7 +371,10 @@ const DashboardAllSnippetsView = () => {
       />
       <div className="mt-6">
         <div className="bg-muted/50 rounded-xl p-5 flex gap-2">
-          <Tags onSelectTag={setSelectedTag} />
+          <Tags
+            onSelectTag={setSelectedFunction}
+            functionNames={functionNames}
+          />
         </div>
         <div className={`${selectedSnippet ? "gap-6" : ""} mt-6`}>
           <div
@@ -346,11 +382,21 @@ const DashboardAllSnippetsView = () => {
               selectedSnippet ? "hidden" : "w-full"
             }`}
           >
-            <CodeSnippetsGrid
-              snippets={filteredSnippets}
-              onSnippetSelect={setSelectedSnippet}
-              onDelete={handleDeleteSnippet}
-            />
+            {filteredSnippets.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500">
+                  {snippets.length === 0
+                    ? "No snippets found"
+                    : "No snippets match your current filters"}
+                </p>
+              </div>
+            ) : (
+              <CodeSnippetsGrid
+                snippets={filteredSnippets}
+                onSnippetSelect={setSelectedSnippet}
+                onDelete={handleDeleteSnippet}
+              />
+            )}
           </div>
           {selectedSnippet && (
             <div
@@ -364,9 +410,7 @@ const DashboardAllSnippetsView = () => {
                 onEdit={(snippet) => {
                   handleEdit(snippet).then((res) => {
                     setSnippets((prev) =>
-                      prev.map((s) =>
-                        s._id === selectedSnippet._id ? res : s
-                      )
+                      prev.map((s) => (s._id === selectedSnippet._id ? res : s))
                     );
                   });
                 }}

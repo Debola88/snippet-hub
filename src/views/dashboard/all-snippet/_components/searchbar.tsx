@@ -9,7 +9,10 @@ interface SnippetSearchBarProps {
   onCreateClick: () => void;
 }
 
-const SnippetSearchBar: React.FC<SnippetSearchBarProps> = ({ onSearch, onCreateClick }) => {
+const SnippetSearchBar: React.FC<SnippetSearchBarProps> = ({
+  onSearch,
+  onCreateClick,
+}) => {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onSearch(event.target.value);
   };

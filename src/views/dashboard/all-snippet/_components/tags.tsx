@@ -1,23 +1,17 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 interface TagsProps {
   onSelectTag: (tag: string) => void;
+  functionNames: string[];
 }
 
-const Tags: React.FC<TagsProps> = ({ onSelectTag }) => {
-  const navItems = [
-    "All",
-    "Filter function Exercises",
-    "API Methods",
-    "JavaScript Functions",
-    "React Functions",
-    "Reduce Function",
-  ];
-
+const Tags: React.FC<TagsProps> = ({ onSelectTag, functionNames }) => {
+  const navItems = ["All", ...functionNames];
   const containerRef = useRef<HTMLDivElement>(null);
+  const [selectedFunction, setSelectedFunction] = useState("All");
 
   const handleMouseDown = (e: React.MouseEvent) => {
     const container = containerRef.current;
@@ -39,7 +33,6 @@ const Tags: React.FC<TagsProps> = ({ onSelectTag }) => {
         container.style.cursor = "grab";
         container.style.userSelect = "auto";
       }
-
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", handleMouseUp);
     };
@@ -48,27 +41,35 @@ const Tags: React.FC<TagsProps> = ({ onSelectTag }) => {
     window.addEventListener("mouseup", handleMouseUp);
   };
 
+  const handleTagClick = (tag: string) => {
+    setSelectedFunction(tag);
+    onSelectTag(tag);
+  };
+
   return (
-    <>
+    <div className="flex items-center gap-4 w-full">
       <div
         ref={containerRef}
-        className="max-w-full overflow-x-auto flex gap-3 scrollbar-hide cursor-grab"
+        className="flex-1 overflow-x-auto flex gap-3 scrollbar-hide cursor-grab"
         onMouseDown={handleMouseDown}
       >
-        {navItems.map((item, index) => (
+        {navItems.map((item) => (
           <Button
-            key={index}
-            variant="ghost"
-            className="px-4 py-2 min-w-fit text-gray-700 hover:text-white hover:bg-gradient-to-r from-blue-600 to-blue-800 dark:text-white"
-            onClick={() => onSelectTag(item)} 
-            aria-label={`Select tag: ${item}`}
+            key={item}
+            variant={selectedFunction === item ? "default" : "ghost"}
+            className={`px-4 py-2 min-w-fit ${
+              selectedFunction === item
+                ? "bg-gradient-to-r from-blue-600 to-blue-800 text-white"
+                : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+            }`}
+            onClick={() => handleTagClick(item)}
+            aria-label={`Filter by ${item}`}
           >
             {item}
           </Button>
         ))}
       </div>
-      <Button className="ml-auto">Tags</Button>
-    </>
+    </div>
   );
 };
 

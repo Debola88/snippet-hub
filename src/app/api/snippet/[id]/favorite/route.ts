@@ -12,7 +12,6 @@ export async function PATCH(
   try {
     await dbConnect();
 
-    // Verify authentication
     const authResult = verifyAuth(request);
     if ("error" in authResult) {
       console.error("Auth error:", authResult.error);
@@ -24,7 +23,6 @@ export async function PATCH(
 
     const { userId } = authResult;
 
-    // Validate snippet ID
     if (!mongoose.Types.ObjectId.isValid(params.id)) {
       return NextResponse.json(
         { error: "Invalid snippet ID format" },
@@ -32,7 +30,6 @@ export async function PATCH(
       );
     }
 
-    // Find the snippet
     const snippet = await Snippet.findById(params.id);
     if (!snippet) {
       return NextResponse.json(
@@ -41,16 +38,13 @@ export async function PATCH(
       );
     }
 
-    // Initialize favoritedBy if needed
     if (!snippet.favoritedBy) {
       snippet.favoritedBy = [];
     }
 
-    // Check if already favorited
     const userIdObj = new mongoose.Types.ObjectId(userId);
     const isFavorited = snippet.favoritedBy.some((id : any) => id.equals(userIdObj));
 
-    // Update favorites
     if (isFavorited) {
       snippet.favoritedBy = snippet.favoritedBy.filter((id: any) => !id.equals(userIdObj));
     } else {

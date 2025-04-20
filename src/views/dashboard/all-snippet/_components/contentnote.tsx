@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { oneDark } from "@codemirror/theme-one-dark";
+import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 interface ContentNoteProps {
   snippet: {
@@ -24,6 +26,8 @@ const ContentNote: React.FC<ContentNoteProps> = ({
   onEdit,
 }) => {
   const [localSnippet, setLocalSnippet] = useState(snippet);
+  const { toast } = useToast();
+  const router = useRouter();
 
   const getLanguageExtension = () => {
     switch ((snippet.language || "javascript").toLowerCase()) {
@@ -80,7 +84,18 @@ const ContentNote: React.FC<ContentNoteProps> = ({
         <Button variant="outline" onClick={onClose}>
           Close
         </Button>
-        <Button onClick={() => onEdit({ ...localSnippet })}>
+        <Button
+          onClick={async () => {
+            onEdit({ ...localSnippet });
+            toast({
+              description: "Snippet updated successfully",
+              duration: 8000,
+            });
+            setTimeout(() => {
+              router.refresh();
+            }, 8000);
+          }}
+        >
           Save Changes
         </Button>
       </div>

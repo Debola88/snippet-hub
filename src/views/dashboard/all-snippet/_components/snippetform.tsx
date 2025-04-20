@@ -12,6 +12,7 @@ import {
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { oneDark } from "@codemirror/theme-one-dark";
+import { useToast } from "@/hooks/use-toast";
 
 export type SnippetFormData = {
   functionName: string;
@@ -65,6 +66,7 @@ const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (initialData) {
@@ -143,7 +145,17 @@ const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
         />
       </div>
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={loading}
+        onClick={() => {
+          toast({
+            description: "Snippet saved successfully",
+            duration: 8000,
+          });
+        }}
+      >
         {loading ? "Saving..." : "Save"}
       </Button>
     </form>

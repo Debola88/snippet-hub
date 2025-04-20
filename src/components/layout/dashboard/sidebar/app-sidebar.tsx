@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { AudioWaveform, Command, Settings2 } from "lucide-react";
-import { BsTrash } from "react-icons/bs";
+import { AudioWaveform, Command } from "lucide-react";
 import { IoMdHeartEmpty } from "react-icons/io";
 import { HiOutlineSquares2X2 } from "react-icons/hi2";
 // import { IoLogoJavascript } from "react-icons/io5";
@@ -29,9 +28,7 @@ interface DecodedToken {
   email?: string;
 }
 
-export function AppSidebar({
-  ...props
-}: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const [user, setUser] = useState({
     name: "Loading...",
     email: "Loading...",
@@ -56,7 +53,6 @@ export function AppSidebar({
       console.warn("No token found in localStorage");
     }
   }, []);
-  
 
   const data = {
     teams: [
@@ -119,52 +115,6 @@ export function AppSidebar({
           },
           {
             title: "Quantum",
-            url: "#",   
-          },
-        ],
-      },
-      {
-        title: "Trash",
-        url: "#",
-        icon: BsTrash,
-        items: [
-          {
-            title: "Introduction",
-            url: "#",
-          },
-          {
-            title: "Get Started",
-            url: "#",
-          },
-          {
-            title: "Tutorials",
-            url: "#",
-          },
-          {
-            title: "Changelog",
-            url: "#",
-          },
-        ],
-      },
-      {
-        title: "Settings",
-        url: "#",
-        icon: Settings2,
-        items: [
-          {
-            title: "General",
-            url: "#",
-          },
-          {
-            title: "Team",
-            url: "#",
-          },
-          {
-            title: "Billing",
-            url: "#",
-          },
-          {
-            title: "Limits",
             url: "#",
           },
         ],
@@ -179,7 +129,7 @@ export function AppSidebar({
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects/>
+        <NavProjects />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={user} />

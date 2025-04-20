@@ -1,12 +1,12 @@
 import { AppSidebar } from "@/components/layout/dashboard/sidebar/app-sidebar";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+// import {
+//   Breadcrumb,
+//   BreadcrumbItem,
+//   BreadcrumbLink,
+//   BreadcrumbList,
+//   BreadcrumbPage,
+//   BreadcrumbSeparator,
+// } from "@/components/ui/breadcrumb";
 import { ModeToggle } from "@/components/ui/mode-toogle";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -14,6 +14,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/toaster";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -28,8 +29,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="-ml-1">
                 <ModeToggle />
               </div>
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumb>
+              {/* <Separator orientation="vertical" className="mr-2 h-4" /> */}
+              {/* <Breadcrumb>
                 <BreadcrumbList>
                   <BreadcrumbItem className="hidden md:block">
                     <BreadcrumbLink href="#">
@@ -41,7 +42,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                     <BreadcrumbPage>Data Fetching</BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
-              </Breadcrumb>
+              </Breadcrumb> */}
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-hidden">
@@ -53,6 +54,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div> */}
             {children}
           </div>
+          <Toaster />
         </div>
       </div>
     </SidebarProvider>

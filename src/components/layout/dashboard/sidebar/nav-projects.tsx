@@ -1,6 +1,5 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { MoreHorizontal } from "lucide-react";
 import {
   SidebarGroup,
@@ -11,8 +10,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { IconType } from "react-icons/lib";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
-// reuse your icon map from elsewhere:
 import {
   SiJavascript,
   SiTypescript,
@@ -165,60 +164,124 @@ const normalizeLang = (lang: string) => {
 export function NavProjects() {
   const [langs, setLangs] = useState<LanguageCount[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [selectedLanguage, setSelectedLanguage] = useState<string | null>(null);
 
   useEffect(() => {
-    async function load() {
-      try {
-        const res = await fetch("/api/snippet/language");
-        if (!res.ok) throw new Error("Failed to load languages");
-        const data: LanguageCount[] = await res.json();
-        setLangs(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
+    const langParam = searchParams.get("lang");
+    if (langParam) {
+      setSelectedLanguage(langParam);
     }
-    load();
+  }, [searchParams]);
+
+  const fetchLanguages = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setError("Please login to view languages");
+        return;
+      }
+
+      const res = await fetch("/api/snippet/language", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        setError("Session expired. Please login again.");
+        return;
+      }
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+
+      const data = await res.json();
+      setLangs(data);
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError("Failed to load languages");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Languages</SidebarGroupLabel>
-      <SidebarMenu>
-        {loading ? (
+  const handleLanguageClick = (language: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (selectedLanguage === language) {
+      params.delete("lang");
+      setSelectedLanguage(null);
+    } else {
+      params.set("lang", language);
+      setSelectedLanguage(language);
+    }
+
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  useEffect(() => {
+    fetchLanguages();
+  }, [fetchLanguages]);
+
+  if (error) {
+    return (
+      <SidebarGroup>
+        <SidebarGroupLabel>Languages</SidebarGroupLabel>
+        <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton className="opacity-50 cursor-wait">
-              <MoreHorizontal className="animate-spin" />
-              <span>Loading…</span>
+            <SidebarMenuButton className="text-red-500">
+              <span>{error}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-        ) : (
-          langs.map(({ language, count }) => {
-            const Icon = iconMap[normalizeLang(language)] || MoreHorizontal;
-            
-            return (
-              <SidebarMenuItem key={language}>
-                <SidebarMenuButton
-                  asChild
-                  className="hover:bg-gradient-to-r from-blue-600 to-blue-800 hover:text-white transition-all duration-150"
-                >
-                  <a href={`#lang-${language}`}>
-                    <Icon />
-                    <span>{language}</span>
-                  </a>
-                </SidebarMenuButton>
-                <SidebarMenuBadge>{count}</SidebarMenuBadge>
-              </SidebarMenuItem>
-            );
-          })
-        )}
-        <SidebarMenuItem>
-          <SidebarMenuButton className="text-sidebar-foreground/70">
-            <MoreHorizontal className="text-sidebar-foreground/70" />
-            <span>More</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+    );
+  }
+
+  if (loading) {
+    return (
+      <SidebarGroup>
+        <SidebarGroupLabel>Languages</SidebarGroupLabel>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton>
+              <MoreHorizontal className="animate-spin" />
+              <span>Loading...</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarGroup>
+    );
+  }
+
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Languages</SidebarGroupLabel>
+      <SidebarMenu>
+        {langs.map(({ language, count }) => {
+          const Icon = iconMap[normalizeLang(language)] || MoreHorizontal;
+          const isSelected = selectedLanguage === language;
+
+          return (
+            <SidebarMenuItem key={language}>
+              <SidebarMenuButton
+                onClick={() => handleLanguageClick(language)}
+                className={isSelected ? "bg-accent" : ""}
+              >
+                <Icon />
+                <span>{language}</span>
+              </SidebarMenuButton>
+              <SidebarMenuBadge>{count}</SidebarMenuBadge>
+            </SidebarMenuItem>
+          );
+        })}
       </SidebarMenu>
     </SidebarGroup>
   );

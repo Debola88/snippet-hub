@@ -60,6 +60,8 @@ const DashboardFavoriteView = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedSnippet, setSelectedSnippet] = useState<Snippet | null>(null);
+    const [snippets, setSnippets] = useState<Snippet[]>([]);
+  
 
   const languageIconMap: Record<string, React.ElementType> = {
     javascript: SiJavascript,
@@ -145,6 +147,30 @@ const DashboardFavoriteView = ({
     fetchFavorites();
   }, []);
 
+  const handleEdit = async (updatedSnippet: Snippet) => {
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Snipped ID", updatedSnippet.code, updatedSnippet._id);
+      const res = await fetch(`/api/snippet/${updatedSnippet._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(updatedSnippet),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Update failed");
+
+      console.log("Snippet updated successfully!");
+      return result
+    } catch (error) {
+      console.error("Update failed:", error);
+      alert("Failed to update snippet.");
+    }
+  };
+
   const handleDeleteSnippet = async (snippetId: string) => {
     try {
       const token = localStorage.getItem("token");
@@ -165,7 +191,6 @@ const DashboardFavoriteView = ({
         throw new Error(errorData.error || "Failed to delete snippet.");
       }
 
-      // Update UI after deletion
       setFavorites((prev) => prev.filter((s) => s._id !== snippetId));
 
       console.log("Snippet deleted successfully.");
@@ -220,14 +245,14 @@ const DashboardFavoriteView = ({
           <ContentNote
             snippet={selectedSnippet}
             onClose={handleCloseContentNote}
-            onEdit={(updatedSnippet) => {
-              // Update snippet in the list if needed
-              setFavorites((prev) =>
-                prev.map((s) =>
-                  s._id === updatedSnippet._id ? updatedSnippet : s
-                )
-              );
-              setSelectedSnippet(null);
+            onEdit={(snippet) => {
+              handleEdit(snippet).then((res) => {
+                setSnippets((prev) =>
+                  prev.map((s) =>
+                    s._id === selectedSnippet._id ? res : s
+                  )
+                );
+              });
             }}
           />
         </div>
@@ -244,7 +269,7 @@ const DashboardFavoriteView = ({
             code={snippet.code}
             functionName={snippet.functionName}
             description={snippet.description}
-            dateCreated={new Date(snippet.createdAt).toLocaleDateString(
+            createdAt={new Date(snippet.createdAt).toLocaleDateString(
               "en-US",
               {
                 year: "numeric",
