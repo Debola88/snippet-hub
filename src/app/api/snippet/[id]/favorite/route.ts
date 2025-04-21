@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* app/api/snippet/[id]/favorite/route.ts */
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAuth } from "@/app/middleware/auth";
 import Snippet from "@/app/models/snippet";
@@ -6,69 +7,46 @@ import { dbConnect } from "@/lib/mongodb";
 import mongoose from "mongoose";
 
 export async function PATCH(
-    request: NextRequest,
-    { params }: { params: { id: string } }  
+  request: NextRequest,
+  context: any       // ← widen to `any`
 ) {
-  // const { id } = context.params;
+  const { id } = context.params as { id: string };  // then cast for safety
 
-  try {
-    await dbConnect();
-
-    const authResult = verifyAuth(request);
-    if ("error" in authResult) {
-      console.error("Auth error:", authResult.error);
-      return NextResponse.json(
-        { error: authResult.error },
-        { status: authResult.error.includes("expired") ? 401 : 403 }
-      );
-    }
-
-    const { userId } = authResult;
-
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
-      return NextResponse.json(
-        { error: "Invalid snippet ID format" },
-        { status: 400 }
-      );
-    }
-
-    const snippet = await Snippet.findById(params.id);
-    if (!snippet) {
-      return NextResponse.json(
-        { error: "Snippet not found" },
-        { status: 404 }
-      );
-    }
-
-    if (!snippet.favoritedBy) {
-      snippet.favoritedBy = [];
-    }
-
-    const userIdObj = new mongoose.Types.ObjectId(userId);
-    const isFavorited = snippet.favoritedBy.some((id: any) =>
-      id.equals(userIdObj)
-    );
-
-    if (isFavorited) {
-      snippet.favoritedBy = snippet.favoritedBy.filter(
-        (id: any) => !id.equals(userIdObj)
-      );
-    } else {
-      snippet.favoritedBy.push(userIdObj);
-    }
-
-    await snippet.save();
-
-    return NextResponse.json({
-      success: true,
-      favorited: !isFavorited,
-      count: snippet.favoritedBy.length,
-    });
-  } catch (error) {
-    console.error("Error in favorite endpoint:", error);
+  await dbConnect();
+  const authResult = verifyAuth(request);
+  if ("error" in authResult) {
     return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
+      { error: authResult.error },
+      { status: authResult.error.includes("expired") ? 401 : 403 }
     );
   }
+  const { userId } = authResult;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { error: "Invalid snippet ID format" },
+      { status: 400 }
+    );
+  }
+
+  const snippet = await Snippet.findById(id);
+  if (!snippet) {
+    return NextResponse.json({ error: "Snippet not found" }, { status: 404 });
+  }
+
+  snippet.favoritedBy = snippet.favoritedBy || [];
+  const userObj = new mongoose.Types.ObjectId(userId);
+  const isFav = snippet.favoritedBy.some((x: any) => x.equals(userObj));
+
+  snippet.favoritedBy = isFav
+    ? snippet.favoritedBy.filter((x: any) => !x.equals(userObj))
+    : [...snippet.favoritedBy, userObj];
+
+  await snippet.save();
+
+  return NextResponse.json({
+    success: true,
+    favorited: !isFav,
+    count: snippet.favoritedBy.length,
+  });
 }
