@@ -3,12 +3,16 @@ import Snippet from "@/app/models/snippet";
 import { dbConnect } from "@/lib/mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
-
 export async function GET(req: NextRequest) {
   await dbConnect();
 
   const authResult = verifyAuth(req);
-  if ("error" in authResult) return authResult;
+  if ("error" in authResult) {
+    return NextResponse.json(
+      { error: authResult.error },
+      { status: authResult.status ?? 401 }
+    );
+  }
 
   const { userId } = authResult as TokenPayload;
 
@@ -17,6 +21,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json(favorites, { status: 200 });
   } catch (error) {
     console.error("Get favorites error:", error);
-    return NextResponse.json({ error: "Failed to load favorites" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to load favorites" },
+      { status: 500 }
+    );
   }
 }
