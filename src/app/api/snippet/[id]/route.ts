@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "@/lib/mongodb";
 import Snippet from "@/app/models/snippet";
@@ -77,9 +78,9 @@ export async function PUT(
   }
 }
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+  req: NextRequest, { params }: any) {
+  const { id } = params as { id: string };
+ {
   await dbConnect();
   
   const authResult = verifyAuth(req);
@@ -88,9 +89,9 @@ export async function DELETE(
   const { userId } = authResult as TokenPayload;
 
   try {
-    console.log(`Attempting to delete snippet with ID: ${params.id}`);
+    console.log(`Attempting to delete snippet with ID: ${id}`);
     
-    const snippet = await Snippet.findById(params.id);
+    const snippet = await Snippet.findById(id);
     if (!snippet) {
       return NextResponse.json({ error: "Snippet not found" }, { status: 404 });
     }
@@ -99,9 +100,9 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    await Snippet.findByIdAndDelete(params.id);
+    await Snippet.findByIdAndDelete(id);
 
-    console.log(`Snippet deleted successfully: ${params.id}`);
+    console.log(`Snippet deleted successfully: ${id}`);
     
     return NextResponse.json({ message: "Snippet deleted successfully" }, { status: 200 });
   } catch (error) {
@@ -109,3 +110,4 @@ export async function DELETE(
     return NextResponse.json({ error: "Failed to delete snippet" }, { status: 500 });
   }
 }
+  }
