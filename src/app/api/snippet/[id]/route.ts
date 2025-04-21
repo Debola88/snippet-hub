@@ -19,14 +19,14 @@ export async function PUT(
   }
 
   await dbConnect();
-  
   const authResult = verifyAuth(req);
   if ("error" in authResult) {
     return NextResponse.json(
-      { error: authResult.error }, 
-      { status: 401 }
+      { error: authResult.error },
+      { status: authResult.status ?? 401 }
     );
   }
+  
   
   try {
     const { _id, functionName, language, description, code } = await req.json();
@@ -77,37 +77,38 @@ export async function PUT(
     );
   }
 }
-export async function DELETE(
-  req: NextRequest, { params }: any) {
-  const { id } = params as { id: string };
- {
+export async function DELETE(request: NextRequest, context: any) {
+  const { id } = context.params as { id: string };
+
   await dbConnect();
-  
-  const authResult = verifyAuth(req);
-  if ("error" in authResult) return authResult;
-  
+  const authResult = verifyAuth(request);
+  if ("error" in authResult) {
+    return NextResponse.json(
+      { error: authResult.error },
+      { status: authResult.status ?? 401 }
+    );
+  }
   const { userId } = authResult as TokenPayload;
 
   try {
-    console.log(`Attempting to delete snippet with ID: ${id}`);
-    
     const snippet = await Snippet.findById(id);
     if (!snippet) {
       return NextResponse.json({ error: "Snippet not found" }, { status: 404 });
     }
-
     if (snippet.userId.toString() !== userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
     await Snippet.findByIdAndDelete(id);
-
-    console.log(`Snippet deleted successfully: ${id}`);
-    
-    return NextResponse.json({ message: "Snippet deleted successfully" }, { status: 200 });
-  } catch (error) {
-    console.error("Snippet deletion error:", error);
-    return NextResponse.json({ error: "Failed to delete snippet" }, { status: 500 });
+    return NextResponse.json(
+      { message: "Snippet deleted successfully" },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { error: "Failed to delete snippet" },
+      { status: 500 }
+    );
   }
 }
-  }
