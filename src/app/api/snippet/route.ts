@@ -6,12 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   await dbConnect();
-  
+
   const authResult = verifyAuth(req);
   if ("error" in authResult) {
     return NextResponse.json(
       { error: authResult.error },
-      { status: authResult.status || 401 }
+      { status: authResult.status ?? 401 }
     );
   }
   const { userId } = authResult as TokenPayload;
@@ -20,19 +20,28 @@ export async function GET(req: NextRequest) {
     const snippets = await Snippet.find({ userId });
     return NextResponse.json(snippets, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch snippets" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch snippets" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(req: NextRequest) {
   await dbConnect();
+
   const authResult = verifyAuth(req);
-  if ("error" in authResult) return authResult;
+  if ("error" in authResult) {
+    return NextResponse.json(
+      { error: authResult.error },
+      { status: authResult.status ?? 401 }
+    );
+  }
   const { userId } = authResult as TokenPayload;
 
   try {
     const { functionName, language, description, code } = await req.json();
-    
+
     if (!functionName || !language || !code) {
       return NextResponse.json(
         { error: "Function name, language, and code are required" },
@@ -47,7 +56,7 @@ export async function POST(req: NextRequest) {
       description,
       code,
     });
-    
+
     return NextResponse.json(snippet, { status: 201 });
   } catch (error) {
     console.error("Snippet creation error:", error);
