@@ -6,10 +6,10 @@ import { dbConnect } from "@/lib/mongodb";
 import mongoose from "mongoose";
 
 export async function PATCH(
-  request: NextRequest,
-  context: { params: { id: string } }
+    request: NextRequest,
+    { params }: { params: { id: string } }  
 ) {
-  const { id } = context.params;
+  // const { id } = context.params;
 
   try {
     await dbConnect();
@@ -25,14 +25,14 @@ export async function PATCH(
 
     const { userId } = authResult;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(params.id)) {
       return NextResponse.json(
         { error: "Invalid snippet ID format" },
         { status: 400 }
       );
     }
 
-    const snippet = await Snippet.findById(id);
+    const snippet = await Snippet.findById(params.id);
     if (!snippet) {
       return NextResponse.json(
         { error: "Snippet not found" },
