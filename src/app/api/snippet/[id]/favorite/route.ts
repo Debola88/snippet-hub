@@ -7,8 +7,10 @@ import mongoose from "mongoose";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { id } = context.params;
+
   try {
     await dbConnect();
 
@@ -23,14 +25,14 @@ export async function PATCH(
 
     const { userId } = authResult;
 
-    if (!mongoose.Types.ObjectId.isValid(params.id)) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return NextResponse.json(
         { error: "Invalid snippet ID format" },
         { status: 400 }
       );
     }
 
-    const snippet = await Snippet.findById(params.id);
+    const snippet = await Snippet.findById(id);
     if (!snippet) {
       return NextResponse.json(
         { error: "Snippet not found" },
@@ -43,10 +45,14 @@ export async function PATCH(
     }
 
     const userIdObj = new mongoose.Types.ObjectId(userId);
-    const isFavorited = snippet.favoritedBy.some((id : any) => id.equals(userIdObj));
+    const isFavorited = snippet.favoritedBy.some((id: any) =>
+      id.equals(userIdObj)
+    );
 
     if (isFavorited) {
-      snippet.favoritedBy = snippet.favoritedBy.filter((id: any) => !id.equals(userIdObj));
+      snippet.favoritedBy = snippet.favoritedBy.filter(
+        (id: any) => !id.equals(userIdObj)
+      );
     } else {
       snippet.favoritedBy.push(userIdObj);
     }
@@ -56,9 +62,8 @@ export async function PATCH(
     return NextResponse.json({
       success: true,
       favorited: !isFavorited,
-      count: snippet.favoritedBy.length
+      count: snippet.favoritedBy.length,
     });
-
   } catch (error) {
     console.error("Error in favorite endpoint:", error);
     return NextResponse.json(
