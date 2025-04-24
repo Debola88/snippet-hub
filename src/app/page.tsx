@@ -1,9 +1,6 @@
-"use client";
-import LoginPage from "./(auth)/(login)/page";
-
-export const dynamic = "force-dynamic";
-
+// app/page.tsx
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return <LoginPage />;
+  redirect("/");
 }
