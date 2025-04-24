@@ -1,9 +1,16 @@
-'use client'
 import DashboardFavoriteView from "@/views/dashboard/favorite";
-import React from "react";
+import React, { Suspense } from "react";
+export const dynamic = "force-dynamic";
 
 const DashboardFavoritePage = () => {
-  return <DashboardFavoriteView onSnippetSelect={(snippet) => console.log("Selected:", snippet)} />
+  
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DashboardFavoriteView
+        onSnippetSelect={(snippet) => console.log("Selected:", snippet)}
+      />
+    </Suspense>
+  );
 };
 
 export default DashboardFavoritePage;

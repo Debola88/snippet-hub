@@ -15,6 +15,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/toaster";
+import { Suspense } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -46,13 +47,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-hidden">
-            {/* <div className="grid auto-rows-min gap-4 md:grid-cols-3">
+            <Suspense fallback={<div>Loading...</div>}>
+              {/* <div className="grid auto-rows-min gap-4 md:grid-cols-3">
               <div className="aspect-video rounded-xl bg-muted/50" >
               </div>
               <div className="aspect-video rounded-xl bg-muted/50" />
               <div className="aspect-video rounded-xl bg-muted/50" />
             </div> */}
-            {children}
+              {children}
+            </Suspense>
           </div>
           <Toaster />
         </div>

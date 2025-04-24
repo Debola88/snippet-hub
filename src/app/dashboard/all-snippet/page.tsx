@@ -1,8 +1,15 @@
+import { Suspense } from "react";
 import DashboardAllSnippetsView from "@/views/dashboard/all-snippet";
-import React from "react";
+
+export const dynamic = "force-dynamic";
+
 
 const DashboardAllSnippetPage = () => {
-  return <DashboardAllSnippetsView />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <DashboardAllSnippetsView />
+    </Suspense>
+  );
 };
 
 export default DashboardAllSnippetPage;
