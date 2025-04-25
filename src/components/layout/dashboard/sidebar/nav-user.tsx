@@ -109,7 +109,7 @@ export function NavUser({
                   description: "Logged out successfully.",
                   variant: "destructive",
                 });
-                router.replace("/");
+                router.replace("/login");
               }}
             >
               <LogOut />

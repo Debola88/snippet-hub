@@ -1,9 +1,7 @@
-'use client'
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 
-export default function Home() {
-  const router = useRouter();
 
-  router.push("/");
+export default function Home() {
+  redirect("/login");
 }
