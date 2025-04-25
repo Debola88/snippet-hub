@@ -1,8 +1,9 @@
 // app/page.tsx
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 export const dynamic = "force-dynamic";
 
-
 export default function Home() {
-  redirect("/login");
+  const router = useRouter();
+
+  router.push("/");
 }
