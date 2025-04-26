@@ -13,6 +13,8 @@ import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { useToast } from "@/hooks/use-toast";
+import { EditorView } from "@codemirror/view";
+
 
 export type SnippetFormData = {
   functionName: string;
@@ -97,7 +99,7 @@ const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
   };
 
   return (
-    <form className="space-y-4" onSubmit={handleSubmit}>
+    <form className="space-y-4 " onSubmit={handleSubmit}>
       {error && <p className="text-red-500 text-sm">{error}</p>}
 
       <Input
@@ -134,12 +136,13 @@ const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
         required
       />
 
-      <div className="h-72 border border-gray-700 rounded-lg overflow-hidden">
+      <div className="h-72 border border-gray-700 rounded-lg overflow-hidden w-">
         <CodeMirror
           value={form.code}
           height="288px"
+          width="auto"
           theme={oneDark}
-          extensions={[javascript()]}
+          extensions={[javascript(), EditorView.lineWrapping]}
           onChange={handleCodeChange}
           className="rounded-md"
         />
