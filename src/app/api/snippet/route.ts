@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
   const { userId } = authResult as TokenPayload;
 
   try {
-    const snippets = await Snippet.find({ userId });
+    const snippets = await Snippet.find({ userId }).sort({ createdAt: -1 });
     return NextResponse.json(snippets, { status: 200 });
   } catch (error) {
     return NextResponse.json(
