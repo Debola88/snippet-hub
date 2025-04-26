@@ -136,7 +136,7 @@ const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
         required
       />
 
-      <div className="h-72 border border-gray-700 rounded-lg overflow-hidden w-">
+      <pre className="h-72 border border-gray-700 rounded-lg overflow-hidden">
         <CodeMirror
           value={form.code}
           height="288px"
@@ -146,7 +146,7 @@ const SnippetForm: React.FC<SnippetFormProps> = ({ initialData, onSave }) => {
           onChange={handleCodeChange}
           className="rounded-md"
         />
-      </div>
+      </pre>
 
       <Button
         type="submit"
