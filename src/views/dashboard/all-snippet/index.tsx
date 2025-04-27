@@ -8,7 +8,7 @@ import CodeSnippetsGrid from "./_components/codesnippetgrid";
 import SnippetForm from "./_components/snippetform";
 import { IconType } from "react-icons/lib";
 import { useToast } from "@/hooks/use-toast";
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams } from "next/navigation";
 import {
   Dialog,
   DialogContent,
@@ -45,6 +45,7 @@ import {
   SiReact,
   SiSharp,
 } from "react-icons/si";
+import BackToTopButton from "@/components/ui/backtotop";
 
 interface Snippet {
   _id: string;
@@ -240,15 +241,14 @@ const DashboardAllSnippetsView = () => {
     const matchesSearch =
       snippet.functionName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       snippet.description.toLowerCase().includes(searchQuery.toLowerCase());
-  
+
     const matchesLanguage =
       !selectedLanguage ||
       snippet.language.toLowerCase() === selectedLanguage.toLowerCase();
-  
+
     const matchesFunction =
-      selectedFunction === "All" || 
-      snippet.functionName === selectedFunction;
-  
+      selectedFunction === "All" || snippet.functionName === selectedFunction;
+
     return matchesSearch && matchesLanguage && matchesFunction;
   });
 
@@ -441,6 +441,7 @@ const DashboardAllSnippetsView = () => {
           />
         </DialogContent>
       </Dialog>
+      <BackToTopButton />
     </div>
   );
 };
