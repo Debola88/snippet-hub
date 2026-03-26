@@ -200,10 +200,6 @@ const DashboardFavoriteView = ({
     }
   };
 
-  // const handleSnippetSelect = (snippet: Snippet) => {
-  //   // Implement what happens when a snippet is selected
-  //   console.log("Selected snippet:", snippet);
-  // };
 
   if (loading) {
     return (
